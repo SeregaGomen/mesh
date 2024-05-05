@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import {Form} from './ui/form.js';
+import {Forms} from './ui/forms.js';
 
 // ========================================
 ReactDOM.createRoot(
-    document.getElementById("root")).render(<Form />
+    document.getElementById("root")).render(<Forms />
 );

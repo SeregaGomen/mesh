@@ -197,7 +197,7 @@ class Legend extends React.Component {
     }
 }
 
-export class Form extends React.Component {
+export class Forms extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
