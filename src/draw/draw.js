@@ -31,7 +31,7 @@ export let renderParams = {
         color: [7],
         value: [7],
     },
-    funIndex: -1,
+    funIndex: null,
     isMesh: true,
     isSurface: true,
 }
@@ -146,7 +146,7 @@ export function renderImage() {
     // Create a buffers to put positions in
     let buffers = createBuffers(gl, renderParams.mesh, renderParams.funIndex);
 
-    if (renderParams.funIndex !== -1) {
+    if (renderParams.funIndex !== null) {
         createLegend(renderParams.mesh);
     }
 

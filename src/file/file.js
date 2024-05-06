@@ -367,7 +367,7 @@ export function loadFile(file) {
             let fileData = {
                 data: reader.result
             };
-            renderParams.funIndex = -1;
+            renderParams.funIndex = null;
             switch (fileExt.toUpperCase()) {
                 case "MESH":
                     ok = loadMesh(fileData, mesh);
@@ -384,7 +384,7 @@ export function loadFile(file) {
                     break;
                 default:
                     alert("Unknown file format!");
-                    reject({isFileOpened: false, funIndex: -1});
+                    reject({isFileOpened: false, funIndex: null});
             }
 
             // const canvas = document.querySelector("canvas");
@@ -393,7 +393,7 @@ export function loadFile(file) {
 
             if (!ok) {
                 alert("Unable to read file!");
-                reject({isFileOpened: false, funIndex: -1});
+                reject({isFileOpened: false, funIndex: null});
             }
             renderParams.mesh = mesh;
             resolve({isFileOpened: true, funIndex: renderParams.funIndex});
@@ -401,7 +401,7 @@ export function loadFile(file) {
         reader.onerror = function () {
             alert(reader.error);
             //console.log(reader.error);
-            reject({isFileOpened: false, funIndex: -1});
+            reject({isFileOpened: false, funIndex: null});
         };
     });
 }

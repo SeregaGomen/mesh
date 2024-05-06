@@ -202,7 +202,7 @@ export class Forms extends React.Component {
         super(props);
         this.state = {
             isFileOpened: false,
-            funIndex :-1,
+            funIndex: null,
             isLegend: true,
         };
     }
@@ -222,7 +222,7 @@ export class Forms extends React.Component {
                     <Canvas/>
                     <div className="parametersBox">
                         {
-                            this.state.funIndex !== -1 ? <ResultBox funIndex={this.state.funIndex}
+                            this.state.funIndex !== null ? <ResultBox funIndex={this.state.funIndex}
                                                                     updateData={this.updateResult}/> : null
                         }
                         {
@@ -232,7 +232,7 @@ export class Forms extends React.Component {
                         {this.state.isFileOpened ? <VisualizationBox funIndex={this.state.funIndex}/> : null}
                         {this.state.isFileOpened ? <TransformationBox/> : null}
                     </div>
-                    {renderParams.funIndex !== -1 && this.state.isLegend ? <Legend index={this.state.funIndex}/> : null}
+                    {renderParams.funIndex !== null && this.state.isLegend ? <Legend index={this.state.funIndex}/> : null}
                 </div>
             </form>
         )
