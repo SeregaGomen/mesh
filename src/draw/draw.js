@@ -151,6 +151,7 @@ export function renderImage() {
     }
 
     let then = 0;
+    let region = getRegion(renderParams.mesh);
 
     // Draw the scene repeatedly
     function render(now) {
@@ -159,7 +160,7 @@ export function renderImage() {
       //let deltaTime = 0.01;
       then = now;
 
-      renderScene(gl, programInfo, buffers, renderParams.rotationX, renderParams.rotationY, renderParams.rotationZ, getRegion(renderParams.mesh));
+      renderScene(gl, programInfo, buffers, region);
 
       deltaTime = 0.017;
       if (renderParams.isRotation === true) {
@@ -424,7 +425,7 @@ function getRegion(mesh) {
 }
 
 // Draw the scene
-function renderScene(gl, programInfo, buffers, rotationX, rotationY, rotationZ, region) {
+function renderScene(gl, programInfo, buffers, region) {
     resizeCanvasToDisplaySize(gl.canvas);
 
     // Tell WebGL how to convert from clip space to pixels
@@ -487,10 +488,10 @@ function renderScene(gl, programInfo, buffers, rotationX, rotationY, rotationZ, 
     let viewProjectionMatrix = multiply(projectionMatrix, viewMatrix);
 
     // Draw F at the origin
-    let worldMatrix = xRotation(rotationX);
+    let worldMatrix = xRotation(renderParams.rotationX);
 
-    yRotate(worldMatrix, rotationY, worldMatrix);
-    zRotate(worldMatrix, rotationZ, worldMatrix);
+    yRotate(worldMatrix, renderParams.rotationY, worldMatrix);
+    zRotate(worldMatrix, renderParams.rotationZ, worldMatrix);
 
     // Multiply the matrices.
     let worldViewProjectionMatrix = multiply(viewProjectionMatrix, worldMatrix);
