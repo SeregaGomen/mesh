@@ -150,23 +150,19 @@ export function renderImage() {
         createLegend(renderParams.mesh);
     }
 
-    let then = 0;
+    //let then = 0;
     let region = getRegion(renderParams.mesh);
 
     // Draw the scene repeatedly
-    function render(now) {
-      now *= 0.001; // convert to seconds
-      let deltaTime = now - then;
-      //let deltaTime = 0.01;
-      then = now;
+    function render(/* now */) {
+      //now *= 0.001; // convert to seconds
+      let deltaTime = 0.017; // now - then;
+      //then = now;
 
       renderScene(gl, programInfo, buffers, region);
 
-      deltaTime = 0.017;
       if (renderParams.isRotation === true) {
           renderParams.rotationX += deltaTime;
-          // renderParams.rotationY = 0.7 * renderParams.rotationX;
-          // renderParams.rotationZ = 0.3 * renderParams.rotationX;
           renderParams.rotationY += 0.7 * deltaTime;
           renderParams.rotationZ += 0.3 * deltaTime;
       }
