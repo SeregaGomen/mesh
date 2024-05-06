@@ -1,5 +1,5 @@
 import React from "react";
-import {drawImage, renderData} from '../draw/draw';
+import {renderImage, renderParams} from '../draw/draw';
 import {degToRad, radToDeg} from '../utils/utils';
 import {Canvas, CheckBox, Slider, LoadButton, RadioBox} from './primitives';
 
@@ -18,27 +18,27 @@ class RotateBox extends React.Component {
     }
     updateCheckBox = (value) => {
         this.setState({isAutoRotation: value});
-        renderData.isRotation = !renderData.isRotation;
-        if (renderData.isRotation === false) {
-            this.setState({angleX: Math.round(radToDeg(renderData.rotationX)) % 360});
-            this.setState({angleY: Math.round(radToDeg(renderData.rotationY)) % 360});
-            this.setState({angleZ: Math.round(radToDeg(renderData.rotationZ)) % 360});
+        renderParams.isRotation = !renderParams.isRotation;
+        if (renderParams.isRotation === false) {
+            this.setState({angleX: Math.round(radToDeg(renderParams.rotationX)) % 360});
+            this.setState({angleY: Math.round(radToDeg(renderParams.rotationY)) % 360});
+            this.setState({angleZ: Math.round(radToDeg(renderParams.rotationZ)) % 360});
             //console.log(this.state.angleX);
         }
         this.setState({sliderEnabled: value});
     }
     updateSliderX = (value) => {
         this.setState({angleX: value});
-        renderData.rotationX = degToRad(value);
+        renderParams.rotationX = degToRad(value);
         //console.log('***', renderParams.rotationX, renderParams.rotationY, renderParams.rotationZ, '***');
     }
     updateSliderY = (value) => {
         this.setState({angleY: value});
-        renderData.rotationY = degToRad(value);
+        renderParams.rotationY = degToRad(value);
     }
     updateSliderZ = (value) => {
         this.setState({angleZ: value});
-        renderData.rotationZ = degToRad(value);
+        renderParams.rotationZ = degToRad(value);
     }
     render() {
         return (
@@ -64,8 +64,8 @@ class ResultBox extends React.Component {
     }
     updateFunction = (event) => {
         this.setState({funIndex: event.target.value});
-        renderData.funIndex = event.target.value;
-        drawImage();
+        renderParams.funIndex = event.target.value;
+        renderImage();
         this.props.updateData({funIndex: this.state.funIndex, isLegend: this.state.isLegend});
         //alert(event.target.value);
     }
@@ -75,11 +75,11 @@ class ResultBox extends React.Component {
     }
     updateNumColors = (event) => {
         this.setState({numColors: event});
-        renderData.numColors = event;
-        drawImage();
+        renderParams.numColors = event;
+        renderImage();
     }
     render() {
-        let funcList = renderData.mesh.func.map((v, i) => (
+        let funcList = renderParams.mesh.func.map((v, i) => (
             <option value={i}>{v.name}</option>
         ));
         return (
@@ -113,14 +113,14 @@ class VisualizationBox extends React.Component {
     }
     updateRadio = (event) => {
         if (event === "Mesh and surface") {
-            renderData.isMesh = true;
-            renderData.isSurface = true;
+            renderParams.isMesh = true;
+            renderParams.isSurface = true;
         } else if (event === "Mesh") {
-            renderData.isMesh = true;
-            renderData.isSurface = false;
+            renderParams.isMesh = true;
+            renderParams.isSurface = false;
         } else {
-            renderData.isMesh = false;
-            renderData.isSurface = true;
+            renderParams.isMesh = false;
+            renderParams.isSurface = true;
         }
     }
     render() {
@@ -148,15 +148,15 @@ class TransformationBox extends React.Component {
     }
     updateTranslateX = (event) => {
         this.setState({translateX: event});
-        renderData.translateX = event;
+        renderParams.translateX = event;
     }
     updateTranslateY = (event) => {
         this.setState({translateY: event});
-        renderData.translateY = event;
+        renderParams.translateY = event;
     }
     updateScale = (event) => {
         this.setState({scale: event});
-        renderData.scale = event;
+        renderParams.scale = event;
     }
 
     render() {
@@ -180,7 +180,7 @@ class Legend extends React.Component {
         super(props);
         this.state = {
             index: this.props.index,
-            legend: renderData.legend,
+            legend: renderParams.legend,
         };
     }
 
@@ -232,7 +232,7 @@ export class Forms extends React.Component {
                         {this.state.isFileOpened ? <VisualizationBox funIndex={this.state.funIndex}/> : null}
                         {this.state.isFileOpened ? <TransformationBox/> : null}
                     </div>
-                    {renderData.funIndex !== -1 && this.state.isLegend ? <Legend index={this.state.funIndex}/> : null}
+                    {renderParams.funIndex !== -1 && this.state.isLegend ? <Legend index={this.state.funIndex}/> : null}
                 </div>
             </form>
         )

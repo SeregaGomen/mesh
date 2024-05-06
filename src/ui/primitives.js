@@ -1,5 +1,5 @@
 import React from "react";
-import {drawImage} from "../draw/draw";
+import {renderImage} from "../draw/draw";
 import {loadFile} from "../file/file";
 
 export class Canvas extends React.Component {
@@ -16,7 +16,7 @@ export class LoadButton extends React.Component {
     updateFile = (value) => {
         this.props.updateData(value);
         if (value.isFileOpened === true) {
-            drawImage();
+            renderImage();
         }
     }
     render() {

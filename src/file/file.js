@@ -1,5 +1,5 @@
 // Load *.mesh file (internal format)
-import {renderData} from "../draw/draw";
+import {renderParams} from "../draw/draw";
 
 export function loadMesh(fileData, mesh) {
     // Get FE type
@@ -367,7 +367,7 @@ export function loadFile(file) {
             let fileData = {
                 data: reader.result
             };
-            renderData.funIndex = -1;
+            renderParams.funIndex = -1;
             switch (fileExt.toUpperCase()) {
                 case "MESH":
                     ok = loadMesh(fileData, mesh);
@@ -380,7 +380,7 @@ export function loadFile(file) {
                     break;
                 case "QRES":
                     ok = loadQres(fileData, mesh);
-                    renderData.funIndex = 0;
+                    renderParams.funIndex = 0;
                     break;
                 default:
                     alert("Unknown file format!");
@@ -395,8 +395,8 @@ export function loadFile(file) {
                 alert("Unable to read file!");
                 reject({isFileOpened: false, funIndex: -1});
             }
-            renderData.mesh = mesh;
-            resolve({isFileOpened: true, funIndex: renderData.funIndex});
+            renderParams.mesh = mesh;
+            resolve({isFileOpened: true, funIndex: renderParams.funIndex});
         };
         reader.onerror = function () {
             alert(reader.error);
