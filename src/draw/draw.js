@@ -292,19 +292,19 @@ function setColorTable() {
             colorTable.push([red, 0.0, 1.0]);
             red = red < 0.0 ? 0.0 : red - h;
         } else if (step <= i && i < 2 * step) {
-            // dark blue - blue
+            // dark blue-blue
             colorTable.push([0.0, green, 1.0]);
             green = green > 1.0 ? 1.0 : green + h;
         } else if (2 * step <= i && i < 3 * step) {
-            // blue - green
+            // blue-green
             colorTable.push([0.0, 1.0, blue]);
             blue = blue < 0.0 ? 0.0 : blue - h;
         } else if (3 * step <= i && i < 4 * step) {
-            // green - yellow
+            // green-yellow
             colorTable.push([red, 1.0, 0.0]);
             red = red > 1.0 ? 1.0 : red + h;
         } else if (i > 4 * step) {
-            // yellow - orange - red
+            // yellow-orange-red
             colorTable.push([1.0, green, 0.0])
             green = green < 0.0 ? 0.0 : green - 0.5 * h;
         }
@@ -507,10 +507,10 @@ function renderScene(gl, programInfo, buffers, region) {
     gl.uniform4f(programInfo.uniformLocations.worldScale, renderParams.scale, renderParams.scale, renderParams.scale, 1.0);
 
     // Set the color to use
-    gl.uniform4fv(programInfo.uniformLocations.colorLocation, [0.2, 1, 0.2, 1]); // green
+    //gl.uniform4fv(programInfo.uniformLocations.colorLocation, [0.2, 1, 0.2, 1]); // green
 
     // set the light direction.
-    gl.uniform3fv(programInfo.uniformLocations.reverseLightDirectionLocation, normalize([0.5, 0.7, 1]));
+    gl.uniform3fv(programInfo.uniformLocations.reverseLightDirectionLocation, normalize([0.5, 0.7, 1], null));
 
     // set the is mesh sign
     gl.uniform1i(programInfo.uniformLocations.isMeshLocation, 0);

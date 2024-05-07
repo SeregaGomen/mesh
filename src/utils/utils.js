@@ -162,13 +162,13 @@ export function lookAt(cameraPosition, target, up, dst) {
     return dst;
 }
 
-/**
- * normalizes a vector.
- * @param {Vector3} v vector to normalize
- * @param {Vector3} dst optional vector3 to store result
- * @return {Vector3} dst or new Vector3 if not provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * normalizes a vector.
+//  * @param {Vector3} v vector to normalize
+//  * @param {Vector3} dst optional vector3 to store result
+//  * @return {Vector3} dst or new Vector3 if not provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function normalize(v, dst) {
     dst = dst || new MatType(3);
     let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
@@ -181,13 +181,13 @@ export function normalize(v, dst) {
     return dst;
 }
 
-/**
- * Computes the inverse of a matrix.
- * @param {Matrix4} m matrix to compute inverse of
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Computes the inverse of a matrix.
+//  * @param {Matrix4} m matrix to compute inverse of
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function inverse(m, dst) {
     dst = dst || new MatType(16);
     let m00 = m[0 * 4 + 0];
@@ -274,17 +274,17 @@ export function inverse(m, dst) {
     return dst;
 }
 
-/**
- * Takes two 4-by-4 matrices, a and b, and computes the product in the order
- * that pre-composes b with a.  In other words, the matrix returned will
- * transform by b first and then a.  Note this is subtly different from just
- * multiplying the matrices together.  For given a and b, this function returns
- * the same object in both row-major and column-major mode.
- * @param {Matrix4} a A matrix.
- * @param {Matrix4} b A matrix.
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- */
+// /**
+//  * Takes two 4-by-4 matrices, a and b, and computes the product in the order
+//  * that pre-composes b with a.  In other words, the matrix returned will
+//  * transform by b first and then a.  Note this is subtly different from just
+//  * multiplying the matrices together.  For given a and b, this function returns
+//  * the same object in both row-major and column-major mode.
+//  * @param {Matrix4} a A matrix.
+//  * @param {Matrix4} b A matrix.
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  */
 export function multiply(a, b, dst) {
     dst = dst || new MatType(16);
     let b00 = b[0 * 4 + 0];
@@ -338,13 +338,13 @@ export function multiply(a, b, dst) {
     return dst;
 }
 
-/**
- * Transposes a matrix.
- * @param {Matrix4} m matrix to transpose.
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Transposes a matrix.
+//  * @param {Matrix4} m matrix to transpose.
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function transpose(m, dst) {
     dst = dst || new MatType(16);
 
@@ -368,13 +368,13 @@ export function transpose(m, dst) {
     return dst;
 }
 
-/**
- * Makes an x rotation matrix
- * @param {number} angleInRadians amount to rotate
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Makes an x rotation matrix
+//  * @param {number} angleInRadians amount to rotate
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function xRotation(angleInRadians, dst) {
     dst = dst || new MatType(16);
     let c = Math.cos(angleInRadians);
@@ -400,14 +400,14 @@ export function xRotation(angleInRadians, dst) {
     return dst;
 }
 
-/**
- * Multiply by an x rotation matrix
- * @param {Matrix4} m matrix to multiply
- * @param {number} angleInRadians amount to rotate
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Multiply by an x rotation matrix
+//  * @param {Matrix4} m matrix to multiply
+//  * @param {number} angleInRadians amount to rotate
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function xRotate(m, angleInRadians, dst) {
     // this is the optimized version of
     // return multiply(m, xRotation(angleInRadians), dst);
@@ -447,13 +447,13 @@ export function xRotate(m, angleInRadians, dst) {
     return dst;
 }
 
-/**
- * Makes an y rotation matrix
- * @param {number} angleInRadians amount to rotate
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Makes an y rotation matrix
+//  * @param {number} angleInRadians amount to rotate
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function yRotation(angleInRadians, dst) {
     dst = dst || new MatType(16);
     let c = Math.cos(angleInRadians);
@@ -479,14 +479,14 @@ export function yRotation(angleInRadians, dst) {
     return dst;
 }
 
-/**
- * Multiply by an y rotation matrix
- * @param {Matrix4} m matrix to multiply
- * @param {number} angleInRadians amount to rotate
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Multiply by an y rotation matrix
+//  * @param {Matrix4} m matrix to multiply
+//  * @param {number} angleInRadians amount to rotate
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function yRotate(m, angleInRadians, dst) {
     // this is the optimized version of
     // return multiply(m, yRotation(angleInRadians), dst);
@@ -526,13 +526,13 @@ export function yRotate(m, angleInRadians, dst) {
     return dst;
 }
 
-/**
- * Makes an z rotation matrix
- * @param {number} angleInRadians amount to rotate
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Makes an z rotation matrix
+//  * @param {number} angleInRadians amount to rotate
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function zRotation(angleInRadians, dst) {
     dst = dst || new MatType(16);
     let c = Math.cos(angleInRadians);
@@ -558,14 +558,14 @@ export function zRotation(angleInRadians, dst) {
     return dst;
 }
 
-/**
- * Multiply by an z rotation matrix
- * @param {Matrix4} m matrix to multiply
- * @param {number} angleInRadians amount to rotate
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
+// /**
+//  * Multiply by an z rotation matrix
+//  * @param {Matrix4} m matrix to multiply
+//  * @param {number} angleInRadians amount to rotate
+//  * @param {Matrix4} [dst] optional matrix to store result
+//  * @return {Matrix4} dst or a new matrix if none provided
+//  * @memberOf module:webgl-3d-math
+//  */
 export function zRotate(m, angleInRadians, dst) {
     // This is the optimized version of
     // return multiply(m, zRotation(angleInRadians), dst);
