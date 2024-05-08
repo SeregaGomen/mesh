@@ -385,18 +385,20 @@ export function loadFile(file) {
                 default:
                     alert("Unknown file format!");
                     reject({isFileOpened: false, funIndex: null});
+                    return;
             }
 
             // const canvas = document.querySelector("canvas");
             // const context = canvas.getContext('2d');
             // context.clearRect(0, 0, canvas.width, canvas.height);
 
-            if (!ok) {
+            if (ok) {
+                renderParams.mesh = mesh;
+                resolve({isFileOpened: true, funIndex: renderParams.funIndex});
+            } else {
                 alert("Unable to read file!");
                 reject({isFileOpened: false, funIndex: null});
             }
-            renderParams.mesh = mesh;
-            resolve({isFileOpened: true, funIndex: renderParams.funIndex});
         };
         reader.onerror = function () {
             alert(reader.error);

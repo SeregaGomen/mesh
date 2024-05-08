@@ -142,6 +142,8 @@ export function renderImage() {
     };
 
     cancelAnimationFrame(id);
+    minU = [0.0, 0.0];
+    maxU = [0.0, 0.0];
 
     // Create a buffers to put positions in
     let buffers = createBuffers(gl, renderParams.mesh, renderParams.funIndex);
