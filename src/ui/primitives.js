@@ -28,7 +28,9 @@ export class LoadButton extends React.Component {
                            console.log("File is undefined!");
                            return;
                        }
-                       loadFile(event.target.files[0]).then(this.updateFile);
+                       loadFile(event.target.files[0]).then(this.updateFile).catch(() => {
+                           alert("Failed to load file!")
+                       });
                    }}
             />
         )

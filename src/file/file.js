@@ -383,7 +383,8 @@ export function loadFile(file) {
                     renderParams.funIndex = 0;
                     break;
                 default:
-                    alert("Unknown file format!");
+                    console.log("Unknown file format!");
+                    //alert("Unknown file format!");
                     reject({isFileOpened: false, funIndex: null});
                     return;
             }
@@ -396,13 +397,14 @@ export function loadFile(file) {
                 renderParams.mesh = mesh;
                 resolve({isFileOpened: true, funIndex: renderParams.funIndex});
             } else {
-                alert("Unable to read file!");
+                console.log("Unable to read file!");
+                //alert("Unable to read file!");
                 reject({isFileOpened: false, funIndex: null});
             }
         };
         reader.onerror = function () {
-            alert(reader.error);
-            //console.log(reader.error);
+            //alert(reader.error);
+            console.log(reader.error);
             reject({isFileOpened: false, funIndex: null});
         };
     });
