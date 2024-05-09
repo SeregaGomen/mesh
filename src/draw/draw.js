@@ -196,14 +196,14 @@ function createLegend() {
 
 function createBuffers(gl, mesh, funIndex) {
     let geometry = getGeometry(mesh, funIndex);
-    numTri = geometry.positions.length;
+    numTri = geometry.surface_positions.length;
     //numElm = geometry.mesh_positions.length;
     // Create a buffer to put positions in
     let positionBuffer = gl.createBuffer();
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Put geometry data into buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(geometry.positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(geometry.surface_positions), gl.STATIC_DRAW);
 
     // Create a buffer to put mesh positions in
     let meshPositionBuffer = gl.createBuffer();
@@ -280,7 +280,7 @@ function getGeometry(mesh, funIndex) {
         mesh_positions.push(mesh.x[elm[i][0]][0], mesh.x[elm[i][0]][1], mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][0]][2] : 0.0);
     }
     numElm = mesh_positions.length;
-    return {positions: positions, mesh_positions: mesh_positions, normals: normals, colors: colors}
+    return {surface_positions: positions, mesh_positions: mesh_positions, normals: normals, colors: colors}
 }
 
 
