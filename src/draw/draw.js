@@ -34,6 +34,7 @@ export let renderParams = {
     funIndex: null,
     isMesh: true,
     isSurface: true,
+    isAxes: true,
 }
 
 let numTri = 0;
@@ -222,9 +223,14 @@ function createBuffers(gl, mesh, funIndex) {
     let colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(geometry.colors), gl.STATIC_DRAW);
-  
 
-    return {position: positionBuffer, mesh_position: meshPositionBuffer, normal: normalBuffer, color: colorBuffer};
+    let axes_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, axes_buffer);
+    // Put geometry data into buffer
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0]), gl.STATIC_DRAW);
+
+
+    return {position: positionBuffer, mesh_position: meshPositionBuffer, normal: normalBuffer, color: colorBuffer, axes: axes_buffer};
 }
 
 
@@ -530,8 +536,29 @@ function renderScene(gl, programInfo, buffers, region) {
 
     // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     gl.vertexAttribPointer(programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
+    // Draw the mesh
     if (renderParams.isMesh) {
         gl.drawArrays(gl.LINES, offset, numElm);
+    }
+
+
+
+
+
+    // Draw the coordinate axes
+    if (renderParams.isAxes) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.axes);
+
+        gl.vertexAttribPointer(programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
+
+
+
+
+        // Turn on the normal attribute
+        gl.enableVertexAttribArray(programInfo.attribLocations.normalLocation);
+
+        gl.drawArrays(gl.LINES, 0, 6);
+        // https://www.tutorialspoint.com/webgl/webgl_drawing_a_triangle.htm
     }
 }
 

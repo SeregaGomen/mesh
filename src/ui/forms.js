@@ -109,6 +109,7 @@ class VisualizationBox extends React.Component {
         super(props);
         this.state = {
             funIndex: this.props.funIndex,
+            isAxes: this.props.isAxes,
         };
     }
     updateRadio = (event) => {
@@ -123,6 +124,10 @@ class VisualizationBox extends React.Component {
             renderParams.isSurface = true;
         }
     }
+    updateCheckbox = (event) => {
+        this.setState({isAxes: !event});
+        renderParams.isAxes = !renderParams.isAxes;
+    }
     render() {
         return (
             <fieldset className="visualizationBox">
@@ -131,6 +136,8 @@ class VisualizationBox extends React.Component {
                           updateData={this.updateRadio}/>
                 <RadioBox name={"ViewOption"} value={"Mesh"} updateData={this.updateRadio}/>
                 <RadioBox name={"ViewOption"} value={"Surface"} updateData={this.updateRadio}/>
+                <CheckBox isChecked={this.state.isAxes} caption={"Coordinate axes"} updateData={this.updateCheckbox}/>
+
             </fieldset>
         )
     }
@@ -229,7 +236,7 @@ export class Forms extends React.Component {
                             this.state.isFileOpened ? <RotateBox angleX={0} angleY={0} angleZ={0} isAutoRotation={true}
                                                                  sliderEnabled={false}/> : null
                         }
-                        {this.state.isFileOpened ? <VisualizationBox funIndex={this.state.funIndex}/> : null}
+                        {this.state.isFileOpened ? <VisualizationBox funIndex={this.state.funIndex} isAxes={true}/> : null}
                         {this.state.isFileOpened ? <TransformationBox/> : null}
                     </div>
                     {renderParams.funIndex !== null && this.state.isLegend ? <Legend index={this.state.funIndex}/> : null}
