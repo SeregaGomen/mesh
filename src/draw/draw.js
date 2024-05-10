@@ -565,6 +565,30 @@ function renderScene(gl, programInfo, buffers, region) {
         gl.enableVertexAttribArray(programInfo.attribLocations.normalLocation);
         gl.drawArrays(gl.LINES, 0, 6);
         // https://www.tutorialspoint.com/webgl/webgl_drawing_a_triangle.htm
+
+
+
+
+
+
+        // let point = [region.radius, 0, 0, 1];
+        //
+        // // вычисляем координаты пространства отсечения,
+        // // используя матрицу, которую мы вычисляли для F
+        // let clipspace = m4.transformVector(matrix, point);
+        //
+        // // делим X и Y на W аналогично видеокарте
+        // clipspace[0] /= clipspace[3];
+        // clipspace[1] /= clipspace[3];
+        //
+        // // конвертация из пространства отсечения в пиксели
+        // var pixelX = (clipspace[0] *  0.5 + 0.5) * gl.canvas.width;
+        // var pixelY = (clipspace[1] * -0.5 + 0.5) * gl.canvas.height;
+        //
+        // // задаём положение div
+        // div.style.left = Math.floor(pixelX) + "px";
+        // div.style.top  = Math.floor(pixelY) + "px";
+        // textNode.nodeValue = clock.toFixed(2);
     }
 }
 
