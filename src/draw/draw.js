@@ -547,6 +547,14 @@ function renderScene(gl, programInfo, buffers, region) {
 
     // Draw the coordinate axes
     if (renderParams.isAxes) {
+
+
+        gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, 0.0, 0.0, 0.0, 0.0);
+        gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * region.radius,region.radius,0.0, 0.0);
+        gl.uniform4f(programInfo.uniformLocations.worldScale, 1.0, 1.0, 1.0, 1.0);
+
+
+
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.axes);
 
         gl.vertexAttribPointer(programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
