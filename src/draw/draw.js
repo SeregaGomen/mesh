@@ -146,15 +146,16 @@ export function renderImage() {
     minU = [0.0, 0.0];
     maxU = [0.0, 0.0];
 
+    let region = getRegion(renderParams.mesh);
+
     // Create a buffers to put positions in
-    let buffers = createBuffers(gl, renderParams.mesh, renderParams.funIndex);
+    let buffers = createBuffers(gl, renderParams.mesh, renderParams.funIndex, region.radius);
 
     if (renderParams.funIndex !== null) {
         createLegend(renderParams.mesh);
     }
 
     //let then = 0;
-    let region = getRegion(renderParams.mesh);
 
     // Draw the scene repeatedly
     function render(/* now */) {
@@ -194,7 +195,7 @@ function createLegend() {
 }
 
 
-function createBuffers(gl, mesh, funIndex) {
+function createBuffers(gl, mesh, funIndex, radius) {
     let geometry = getGeometry(mesh, funIndex);
     numTri = geometry.surface_positions.length;
     //numElm = geometry.mesh_positions.length;
@@ -227,7 +228,8 @@ function createBuffers(gl, mesh, funIndex) {
     let axes_buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, axes_buffer);
     // Put geometry data into buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0]), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0, 0.1 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.1 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1 * radius]), gl.STATIC_DRAW);
 
 
     return {position: positionBuffer, mesh_position: meshPositionBuffer, normal: normalBuffer, color: colorBuffer, axes: axes_buffer};
