@@ -221,18 +221,23 @@ function createBuffers(gl, mesh, funIndex, radius) {
     // Put normals data into buffer
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(geometry.normals), gl.STATIC_DRAW);
 
-    let colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    let surfaceColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, surfaceColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(geometry.colors), gl.STATIC_DRAW);
 
-    let axes_buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, axes_buffer);
+    let axesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, axesBuffer);
     // Put geometry data into buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0, 0.1 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-        0.1 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1 * radius]), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0, 0.05 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.05 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05 * radius]), gl.STATIC_DRAW);
 
-
-    return {position: positionBuffer, mesh_position: meshPositionBuffer, normal: normalBuffer, color: colorBuffer, axes: axes_buffer};
+    return {
+        surface_position: positionBuffer,
+        mesh_position: meshPositionBuffer,
+        axes_position: axesBuffer,
+        surface_normal: normalBuffer,
+        surface_color: surfaceColorBuffer,
+    };
 }
 
 
@@ -453,7 +458,7 @@ function renderScene(gl, programInfo, buffers, region) {
     gl.enableVertexAttribArray(programInfo.attribLocations.positionLocation);
 
     // Bind the position buffer.
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.surface_position);
 
     // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     let size = 3;          // 3 components per iteration
@@ -466,11 +471,11 @@ function renderScene(gl, programInfo, buffers, region) {
     // Turn on the normal attribute
     gl.enableVertexAttribArray(programInfo.attribLocations.normalLocation);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.surface_normal);
     gl.vertexAttribPointer(programInfo.attribLocations.normalLocation, size, type, isNormalize, stride, offset);
 
     gl.enableVertexAttribArray(programInfo.attribLocations.colorLocation);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.surface_color);
     gl.vertexAttribPointer(programInfo.attribLocations.colorLocation, size, type, isNormalize, stride, offset);
 
     // Compute the projection matrix
@@ -550,23 +555,14 @@ function renderScene(gl, programInfo, buffers, region) {
     // Draw the coordinate axes
     if (renderParams.isAxes) {
 
-
         gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, 0.0, 0.0, 0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * region.radius,region.radius,0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldScale, 1.0, 1.0, 1.0, 1.0);
 
-
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.axes);
-
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.axes_position);
         gl.vertexAttribPointer(programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
-
-
-
-
         // Turn on the normal attribute
         gl.enableVertexAttribArray(programInfo.attribLocations.normalLocation);
-
         gl.drawArrays(gl.LINES, 0, 6);
         // https://www.tutorialspoint.com/webgl/webgl_drawing_a_triangle.htm
     }
