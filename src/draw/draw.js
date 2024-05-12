@@ -583,6 +583,7 @@ function renderScene(gl, programInfo, buffers, region, xyz_label) {
 
 function drawAxesLabel(gl, matrix, radius, xyz_label) {
     let label = ["X", "Y", "Z"];
+    let color = ["red", "green", "blue"];
     let point = [[0.05 * radius, 0, 0, 1], [0.0, 0.05 * radius, 0, 1], [0.0, 0.0, 0.05 * radius, 1]];
     for (let i = 0; i < 3; i++) {
         let clipSpace = transformVector(matrix, point[i]);
@@ -590,6 +591,7 @@ function drawAxesLabel(gl, matrix, radius, xyz_label) {
         clipSpace[1] = (clipSpace[1] - radius) / clipSpace[3];
         xyz_label.div[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
         xyz_label.div[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
+        xyz_label.div[i].style.color = color[i];
         xyz_label.text[i].nodeValue = label[i];
     }
 }
