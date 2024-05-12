@@ -348,6 +348,116 @@ function getMinMax(data) {
     return {minU: minU, maxU: maxU};
 }
 
+// МІРЕЛА
+export function loadTxt(fileData, mesh) {
+    let str;
+    let data = getRow(fileData);
+    let prizn = [];
+    while (!data.eof) {
+        if (data.row.includes("M1 x M2 x M3")) {
+            break;
+        }
+        data = getRow(fileData);
+    }
+    if (data.eof) {
+        console.log("Wrong TXT-file format");
+        return false;
+    }
+
+    str = data.row;
+    str = str.replace(/\s/g, '').substring(str.indexOf("M1xM2xM3") + "M1xM2xM3".length + 1).replace(/x/gi, " ");
+    let words = str.trim().split(' ');
+    let m = [Number(words[0]), Number(words[1]), Number(words[2])];
+    let size = m[0] * m[1] * m[2];
+
+    while (!data.eof) {
+        if (data.row.includes("NU")) {
+            break;
+        }
+        data = getRow(fileData);
+    }
+    if (data.eof) {
+        console.log("Wrong TXT-file format");
+        return false;
+    }
+    getRow(fileData);
+    for (let i = 0; i < size; i++) {
+        data = getRow(fileData);
+        if (data.eof) {
+            console.log("Wrong TXT-file format");
+            return false;
+        }
+        str = data.row.trim().replace(/\s+/g, "x");
+        words = str.trim().split('x');
+        mesh.x.push([Number(words[1]), Number(words[2]), Number(words[3])]);
+        prizn.push(Number(words[8]));
+    }
+    createFE(mesh, m, prizn);
+
+}
+
+function createFE(mesh, m, prizn) {
+    let testFE = new Array(mesh.x.length);
+    let index1 = 0;
+    let index2 = 0;
+    let tmp = Array(mesh.x.length);
+    for (let i = 0; i < mesh.x.length; i++) {
+        tmp[i] = new Array(8);
+    }
+    for (let n3 = 1; n3 < m[2]; n3++) {
+        for (let n2 = 1; n2 < m[1]; n2++) {
+            for (let n1 = 1; n1 < m[0]; n1++) {
+                let nf = n1 + m[0] * (n2 - 1) + m[0] * m[1] * (n3 - 1);
+                for (let k3 = 1; k3 < 3; k3++) {
+                    for (let k2 = 1; k2 < 3; k2++) {
+                        for (let k1 = 1; k1 < 3; k1++) {
+                            let ne = nf + (k1 - 1) + m[0] * (k2 - 1) + m[0] * m[1] * (k3 - 1);
+                            if (prizn[ne - 1] < 0) {
+                                testFE[index1] = 1;
+                            }
+                            tmp[index1][index2++] = ne - 1;
+                            if (index2 === 8) {
+                                index1++;
+                                index2 = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    let numFE = index1;
+    let numBadFE = 0;
+    for (let i = 0; i < numFE; i++) {
+        if (testFE[i]) {
+            numBadFE++;
+        }
+    }
+    if (numBadFE) {
+        let tFE = Array(numFE - numBadFE);
+        for (let i = 0; i < tFE.length; i++) {
+            tFE[i] =new Array(8);
+        }
+        let noFE = 0;
+        for (let i = 0; i < numFE; i++) {
+            if (!testFE[i]) {
+                for (let j = 0; j < 8; j++) {
+                    tFE[noFE][j] = tmp[i][j];
+                }
+                noFE++;
+            }
+        }
+        mesh.fe = tFE;
+        //numFE -= numBadFE;
+    } else {
+        mesh.fe = new Array(numFE);
+        for (let i = 0; i < numFE; i++) {
+            mesh.fe[i] = tmp[i];
+        }
+    }
+}
+
+
 export function loadFile(file) {
     return new Promise(function(resolve, reject) {
         let fileExt = file.name.substring(file.name.lastIndexOf('.') + 1, file.name.length);
@@ -380,6 +490,10 @@ export function loadFile(file) {
                     break;
                 case "QRES":
                     ok = loadQres(fileData, mesh);
+                    renderParams.funIndex = 0;
+                    break;
+                case "TXT":
+                    ok = loadTxt(fileData, mesh);
                     renderParams.funIndex = 0;
                     break;
                 default:
