@@ -575,7 +575,9 @@ function renderScene(gl, programInfo, buffers, region, xyz_label) {
         gl.vertexAttribPointer(programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
         // Turn on the normal attribute
         gl.enableVertexAttribArray(programInfo.attribLocations.normalLocation);
+        gl.disable(gl.DEPTH_TEST);
         gl.drawArrays(gl.LINES, 0, 6);
+        gl.enable(gl.DEPTH_TEST);
 
         drawAxesLabel(gl, worldViewProjectionMatrix, region.radius, xyz_label);
     }
@@ -584,7 +586,7 @@ function renderScene(gl, programInfo, buffers, region, xyz_label) {
 function drawAxesLabel(gl, matrix, radius, xyz_label) {
     let label = ["X", "Y", "Z"];
     let color = ["red", "green", "blue"];
-    let point = [[0.05 * radius, 0, 0, 1], [0.0, 0.05 * radius, 0, 1], [0.0, 0.0, 0.05 * radius, 1]];
+    let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
     for (let i = 0; i < 3; i++) {
         let clipSpace = transformVector(matrix, point[i]);
         clipSpace[0] = (clipSpace[0] - 1.5 * radius) / clipSpace[3];
