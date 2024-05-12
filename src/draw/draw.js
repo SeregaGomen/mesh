@@ -1,4 +1,5 @@
 // https://webglfundamentals.org/
+// https://www.tutorialspoint.com/webgl/webgl_drawing_a_triangle.htm
 
 
 import {
@@ -13,6 +14,7 @@ import {
     zRotate,
     transpose,
     normalize,
+    transformVector,
 } from '../utils/utils';
 
 
@@ -114,11 +116,22 @@ export function renderImage() {
     /** @type {HTMLCanvasElement} */
     let canvas = document.querySelector("canvas");
     let gl = canvas.getContext("webgl");
-
     if (!gl) {
         alert("Failed to get the rendering context for WebGL");
         //console.log("Failed to get the rendering context for WebGL");
         return;
+    }
+
+    let divContainerElement = document.querySelector("#xyz_container");
+    let div = [];
+    let textNode = [];
+    // Create containers for axes label
+    for (let i = 0; i < 3; i++) {
+        div.push(document.createElement("div"));
+        div[i].className = "floating-div";
+        textNode.push(document.createTextNode(""));
+        div[i].appendChild(textNode[i]);
+        divContainerElement.appendChild(div[i]);
     }
 
     // setup GLSL program
@@ -159,19 +172,19 @@ export function renderImage() {
 
     // Draw the scene repeatedly
     function render(/* now */) {
-      //now *= 0.001; // convert to seconds
-      let deltaTime = 0.017; // now - then;
-      //then = now;
+        //now *= 0.001; // convert to seconds
+        let deltaTime = 0.017; // now - then;
+        //then = now;
 
-      renderScene(gl, programInfo, buffers, region);
+        renderScene(gl, programInfo, buffers, region, {div: div, text: textNode});
 
-      if (renderParams.isRotation === true) {
-          renderParams.rotationX += deltaTime;
-          renderParams.rotationY += 0.7 * deltaTime;
-          renderParams.rotationZ += 0.3 * deltaTime;
-      }
+        if (renderParams.isRotation === true) {
+            renderParams.rotationX += deltaTime;
+            renderParams.rotationY += 0.7 * deltaTime;
+            renderParams.rotationZ += 0.3 * deltaTime;
+        }
 
-      id = requestAnimationFrame(render);
+        id = requestAnimationFrame(render);
     }
     id = requestAnimationFrame(render);
 }
@@ -270,11 +283,11 @@ function getGeometry(mesh, funIndex) {
             let tri = []
             for (let k = 0; k < 3; k++) {
                 tri.push([
-                    mesh.x[elm[i][index[j][k]]][0], 
-                    mesh.x[elm[i][index[j][k]]][1], 
+                    mesh.x[elm[i][index[j][k]]][0],
+                    mesh.x[elm[i][index[j][k]]][1],
                     mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][index[j][k]]][2] : 0.0,
                     mesh.func.length !== 0 ? mesh.func[funIndex].results[elm[i][index[j][k]]] : 0.0
-                ]);        
+                ]);
             }
             setTriangle3d(tri, positions, normals, colors);
         }
@@ -299,7 +312,7 @@ function setColorTable() {
     let blue = 1.0;
     //let red = 0.24;
     let red = 1.0;
-    
+
     colorTable = [];
     for (let i = 0; i < renderParams.numColors; i++) {
         if (i < step) {
@@ -436,7 +449,7 @@ function getRegion(mesh) {
 }
 
 // Draw the scene
-function renderScene(gl, programInfo, buffers, region) {
+function renderScene(gl, programInfo, buffers, region, xyz_label) {
     resizeCanvasToDisplaySize(gl.canvas);
 
     // Tell WebGL how to convert from clip space to pixels
@@ -554,7 +567,6 @@ function renderScene(gl, programInfo, buffers, region) {
 
     // Draw the coordinate axes
     if (renderParams.isAxes) {
-
         gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, 0.0, 0.0, 0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * region.radius,region.radius,0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldScale, 1.0, 1.0, 1.0, 1.0);
@@ -564,32 +576,21 @@ function renderScene(gl, programInfo, buffers, region) {
         // Turn on the normal attribute
         gl.enableVertexAttribArray(programInfo.attribLocations.normalLocation);
         gl.drawArrays(gl.LINES, 0, 6);
-        // https://www.tutorialspoint.com/webgl/webgl_drawing_a_triangle.htm
 
-
-
-
-
-
-        // let point = [region.radius, 0, 0, 1];
-        //
-        // // вычисляем координаты пространства отсечения,
-        // // используя матрицу, которую мы вычисляли для F
-        // let clipspace = m4.transformVector(matrix, point);
-        //
-        // // делим X и Y на W аналогично видеокарте
-        // clipspace[0] /= clipspace[3];
-        // clipspace[1] /= clipspace[3];
-        //
-        // // конвертация из пространства отсечения в пиксели
-        // var pixelX = (clipspace[0] *  0.5 + 0.5) * gl.canvas.width;
-        // var pixelY = (clipspace[1] * -0.5 + 0.5) * gl.canvas.height;
-        //
-        // // задаём положение div
-        // div.style.left = Math.floor(pixelX) + "px";
-        // div.style.top  = Math.floor(pixelY) + "px";
-        // textNode.nodeValue = clock.toFixed(2);
+        drawAxesLabel(gl, worldViewProjectionMatrix, region.radius, xyz_label);
     }
 }
 
+function drawAxesLabel(gl, matrix, radius, xyz_label) {
+    let label = ["X", "Y", "Z"];
+    let point = [[0.05 * radius, 0, 0, 1], [0.0, 0.05 * radius, 0, 1], [0.0, 0.0, 0.05 * radius, 1]];
+    for (let i = 0; i < 3; i++) {
+        let clipSpace = transformVector(matrix, point[i]);
+        clipSpace[0] = (clipSpace[0] - 1.5 * radius) / clipSpace[3];
+        clipSpace[1] = (clipSpace[1] - radius) / clipSpace[3];
+        xyz_label.div[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
+        xyz_label.div[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
+        xyz_label.text[i].nodeValue = label[i];
+    }
+}
 
