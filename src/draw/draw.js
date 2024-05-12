@@ -271,6 +271,7 @@ function getGeometry(mesh, funIndex) {
     }
     setColorTable();
 
+
     let index = [[0, 1, 2], [2, 3, 0]];
     let elm = mesh.feType.indexOf("fe2d") === -1 ? mesh.be : mesh.fe;
     let len = mesh.feType === "fe2d4" || mesh.feType === "fe3d4s" || mesh.feType === "fe3d8" ? 2 : 1;
@@ -302,8 +303,6 @@ function getGeometry(mesh, funIndex) {
     numElm = mesh_positions.length;
     return {surface_positions: positions, mesh_positions: mesh_positions, normals: normals, colors: colors}
 }
-
-
 
 function setColorTable() {
     let step = renderParams.numColors / 6;
@@ -580,6 +579,10 @@ function renderScene(gl, programInfo, buffers, region, xyz_label) {
         gl.enable(gl.DEPTH_TEST);
 
         drawAxesLabel(gl, worldViewProjectionMatrix, region.radius, xyz_label);
+    } else {
+        for (let i = 0; i < 3; i++) {
+            xyz_label.div[i].style.visibility='hidden';
+        }
     }
 }
 
@@ -594,6 +597,7 @@ function drawAxesLabel(gl, matrix, radius, xyz_label) {
         xyz_label.div[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
         xyz_label.div[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
         xyz_label.div[i].style.color = color[i];
+        xyz_label.div[i].style.visibility='visible';
         xyz_label.text[i].nodeValue = label[i];
     }
 }
