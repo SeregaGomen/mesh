@@ -624,3 +624,11 @@ export function transformVector(m, v, dst) {
     }
     return dst;
 }
+
+export function createMatrix(n, m) {
+    let matrix = new Array(n);
+    for (let i = 0; i < n; i++) {
+        matrix[i] = new Array(m);
+    }
+    return matrix;
+}

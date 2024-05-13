@@ -1,5 +1,6 @@
 // Load *.mesh file (internal format)
 import {renderParams} from "../draw/draw";
+import {createMatrix} from "../utils/utils";
 
 export function loadMesh(fileData, mesh) {
     // Get FE type
@@ -352,7 +353,7 @@ function getMinMax(data) {
 export function loadTxt(fileData, mesh) {
     let str;
     let data = getRow(fileData);
-    let prizn = [];
+    let attrib = [];
     while (!data.eof) {
         if (data.row.includes("M1 x M2 x M3")) {
             break;
@@ -387,23 +388,58 @@ export function loadTxt(fileData, mesh) {
             console.log("Wrong TXT-file format");
             return false;
         }
-        str = data.row.trim().replace(/\s+/g, "x");
+        str = data.row.trim().replace(/\s+/g, "x").replace(/D/gi, "E");
         words = str.trim().split('x');
         mesh.x.push([Number(words[1]), Number(words[2]), Number(words[3])]);
-        prizn.push(Number(words[8]));
+        attrib.push(Number(words[8]));
     }
-    createFE(mesh, m, prizn);
+    createFE(mesh, m, attrib);
 
+    let iter = 0;
+    while (1) {
+        data = getRow(fileData);
+        if (data.eof) {
+            break;
+        }
+
+        if (data.row.includes("ITER=")) {
+            str = data.row;
+            iter = Number(str.substring(str.indexOf("ITER=") + "ITER=".length + 1).trim());
+            continue;
+        }
+        if (data.row.includes("NU")) {
+            str = data.row.trim().replace(/\s+/g, "|");
+            let names = str.trim().split('|');
+            let u = createMatrix(9, size);
+            getRow(fileData);
+            for (let i = 0; i < size; i++) {
+                data = getRow(fileData);
+                if (data.eof) {
+                    console.log("Wrong TXT-file format");
+                    return false;
+                }
+                str = data.row.trim().replace(/\s+/g, "x").replace(/D/gi, "E");
+                words = str.trim().split('x');
+                for (let j = 0; j < 9; j++) {
+                    u[j][i] = Number(words[j + 1]);
+                }
+            }
+            for (let j = 0; j < 9; j++) {
+                let minMax = getMinMax(u[j]);
+                mesh.func.push({name: names[j] + "(" + String(iter) + ")", results: u[j], minU: minMax.minU, maxU: minMax.maxU});
+            }
+        }
+    }
+    createBE(mesh);
+    mesh.feType = "fe3d8";
+    return true;
 }
 
-function createFE(mesh, m, prizn) {
+function createFE(mesh, m, attrib) {
     let testFE = new Array(mesh.x.length);
     let index1 = 0;
     let index2 = 0;
-    let tmp = Array(mesh.x.length);
-    for (let i = 0; i < mesh.x.length; i++) {
-        tmp[i] = new Array(8);
-    }
+    let tmp = createMatrix(mesh.x.length, 8);
     for (let n3 = 1; n3 < m[2]; n3++) {
         for (let n2 = 1; n2 < m[1]; n2++) {
             for (let n1 = 1; n1 < m[0]; n1++) {
@@ -412,7 +448,7 @@ function createFE(mesh, m, prizn) {
                     for (let k2 = 1; k2 < 3; k2++) {
                         for (let k1 = 1; k1 < 3; k1++) {
                             let ne = nf + (k1 - 1) + m[0] * (k2 - 1) + m[0] * m[1] * (k3 - 1);
-                            if (prizn[ne - 1] < 0) {
+                            if (attrib[ne - 1] < 0) {
                                 testFE[index1] = 1;
                             }
                             tmp[index1][index2++] = ne - 1;
@@ -434,10 +470,7 @@ function createFE(mesh, m, prizn) {
         }
     }
     if (numBadFE) {
-        let tFE = Array(numFE - numBadFE);
-        for (let i = 0; i < tFE.length; i++) {
-            tFE[i] =new Array(8);
-        }
+        let tFE = createMatrix(numFE - numBadFE, 8);
         let noFE = 0;
         for (let i = 0; i < numFE; i++) {
             if (!testFE[i]) {
@@ -457,6 +490,117 @@ function createFE(mesh, m, prizn) {
     }
 }
 
+function createBE(mesh) {
+    let cData = [
+        [0, 4, 5, 1, 7],
+        [6, 2, 3, 7, 0],
+        [4, 6, 7, 5, 0],
+        [2, 0, 1, 3, 5],
+        [1, 5, 7, 3, 4],
+        [6, 4, 0, 2, 1]
+    ];
+    let p = new Array(6);
+    let pp = new Array(6);
+    let data = new Array(6);
+
+    let num1 = 6;
+    let num2 = 4;
+    let boundList = createMatrix(6 * mesh.fe.length,num1 + 1);
+    for (let i = 0; i < mesh.fe.length - 1; i++) {
+        for (let j = 0; j < num1; j++) {
+            if (boundList[i][j] === undefined) {
+                for (let l = 0; l < num2; l++) {
+                    p[l]  = mesh.fe[i][cData[j][l]];
+                }
+                for (let k = i + 1; k < mesh.fe.length; k++) {
+                    for (let m = 0; m < num1; m++) {
+                        if (boundList[k][m] === undefined) {
+                            for (let l = 0; l < num2; l++) {
+                                pp[l] = mesh.fe[k][cData[m][l]];
+                            }
+                            if (test(p, pp)) {
+                                boundList[i][j] = boundList[k][m] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    let numFaces = 0;
+    for (let i = 0; i < mesh.fe.length; i++) {
+        for (let j = 0; j < num1; j++) {
+            if (boundList[i][j] === undefined) {
+                numFaces++;
+            }
+        }
+    }
+
+    let surface = createMatrix(numFaces,num2 + 2);
+    numFaces = 0;
+    for (let i = 0; i < mesh.fe.length; i++) {
+        for (let j = 0; j < num1; j++) {
+            if (boundList[i][j] === undefined) {
+                let cx = mesh.x[mesh.fe[i][cData[j][4]]][0];
+                let cy = mesh.x[mesh.fe[i][cData[j][4]]][1];
+                let cz = mesh.x[mesh.fe[i][cData[j][4]]][2];
+
+                let x1 = mesh.x[mesh.fe[i][cData[j][0]]][0];
+                let y1 = mesh.x[mesh.fe[i][cData[j][0]]][1];
+                let z1 = mesh.x[mesh.fe[i][cData[j][0]]][2];
+
+                let x2 = mesh.x[mesh.fe[i][cData[j][1]]][0];
+                let y2 = mesh.x[mesh.fe[i][cData[j][1]]][1];
+                let z2 = mesh.x[mesh.fe[i][cData[j][1]]][2];
+
+                let x3 = mesh.x[mesh.fe[i][cData[j][2]]][0];
+                let y3 = mesh.x[mesh.fe[i][cData[j][2]]][1];
+                let z3 = mesh.x[mesh.fe[i][cData[j][2]]][2];
+
+                for (let l = 0; l < num2; l++) {
+                    data[l] = cData[j][l];
+                }
+
+                if ( ((cx-x1)*(y2-y1)*(z3-z1) + (cy-y1)*(z2-z1)*(x3-x1) + (y3-y1)*(cz-z1)*(x2-x1) -
+                    (x3-x1)*(y2-y1)*(cz-z1) - (y3-y1)*(z2-z1)*(cx-x1) - (cy-y1)*(z3-z1)*(x2-x1)) > 0) {
+                    data[0] = cData[j][0];
+                    data[1] = cData[j][3];
+                    data[2] = cData[j][2];
+                    data[3] = cData[j][1];
+                }
+                for (let l = 0; l < num2; l++) {
+                    surface[numFaces][l] = mesh.fe[i][data[l]];
+                }
+                numFaces++;
+            }
+        }
+    }
+    mesh.be = createMatrix(surface.length, 4);
+    for (let i = 0; i < surface.length; i++) {
+        for (let j = 0; j < 4; j++) {
+            mesh.be[i][j] = surface[i][j];
+        }
+    }
+}
+
+function test(a, b)
+{
+    let result;
+    for (let i = 0; i < 4; i++) {
+        result = false;
+        for (let j = 0; j < 4; j++) {
+            if (b[j] === a[i]) {
+                result = true;
+                break;
+            }
+        }
+        if (result === false) {
+            return false;
+        }
+    }
+    return true;
+}
 
 export function loadFile(file) {
     return new Promise(function(resolve, reject) {
@@ -502,11 +646,6 @@ export function loadFile(file) {
                     reject({isFileOpened: false, funIndex: null});
                     return;
             }
-
-            // const canvas = document.querySelector("canvas");
-            // const context = canvas.getContext('2d');
-            // context.clearRect(0, 0, canvas.width, canvas.height);
-
             if (ok) {
                 renderParams.mesh = mesh;
                 resolve({isFileOpened: true, funIndex: renderParams.funIndex});
