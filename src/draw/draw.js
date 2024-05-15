@@ -549,7 +549,6 @@ function renderScene(gl, programInfo, buffers, region) {
 
 
     // Draw the coordinate axes
-    drawAxesLabel(gl, worldViewProjectionMatrix, region.radius);
     if (renderParams.isAxes) {
         gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, 0.0, 0.0, 0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * region.radius,region.radius,0.0, 0.0);
@@ -563,9 +562,20 @@ function renderScene(gl, programInfo, buffers, region) {
         gl.drawArrays(gl.LINES, 0, 6);
         gl.enable(gl.DEPTH_TEST);
     }
+    drawAxesLabel(gl, worldViewProjectionMatrix, region.radius);
 }
 
 function drawAxesLabel(gl, matrix, radius) {
+    let div = document.getElementById("xyz_container")
+    if (div !== null) {
+        if (renderParams.isAxes) {
+            div.style.visibility = 'visible';
+        } else {
+            div.style.visibility = 'hidden';
+            return;
+        }
+
+    }
     let label = ["X", "Y", "Z"];
     let color = ["red", "green", "blue"];
     let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
@@ -584,7 +594,7 @@ function drawAxesLabel(gl, matrix, radius) {
         xyz_label[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
         xyz_label[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
         xyz_label[i].style.color = color[i];
-        xyz_label[i].style.visibility = renderParams.isAxes ? 'visible' : 'hidden';
+        //xyz_label[i].style.visibility = renderParams.isAxes ? 'visible' : 'hidden';
         xyz_label[i].nodeValue = label[i];
     }
 }
