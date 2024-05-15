@@ -121,19 +121,6 @@ export function renderImage() {
         //console.log("Failed to get the rendering context for WebGL");
         return;
     }
-
-    let divContainerElement = document.querySelector("#xyz_container");
-    let div = [];
-    let textNode = [];
-    // Create containers for axes label
-    for (let i = 0; i < 3; i++) {
-        div.push(document.createElement("div"));
-        div[i].className = "floating-div";
-        textNode.push(document.createTextNode(""));
-        div[i].appendChild(textNode[i]);
-        divContainerElement.appendChild(div[i]);
-    }
-
     // setup GLSL program
     const shaderProgram = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
     const programInfo = {
@@ -176,7 +163,7 @@ export function renderImage() {
         let deltaTime = 0.017; // now - then;
         //then = now;
 
-        renderScene(gl, programInfo, buffers, region, {div: div, text: textNode});
+        renderScene(gl, programInfo, buffers, region);
 
         if (renderParams.isRotation === true) {
             renderParams.rotationX += deltaTime;
@@ -448,7 +435,7 @@ function getRegion(mesh) {
 }
 
 // Draw the scene
-function renderScene(gl, programInfo, buffers, region, xyz_label) {
+function renderScene(gl, programInfo, buffers, region) {
     resizeCanvasToDisplaySize(gl.canvas);
 
     // Tell WebGL how to convert from clip space to pixels
@@ -561,10 +548,8 @@ function renderScene(gl, programInfo, buffers, region, xyz_label) {
     }
 
 
-
-
-
     // Draw the coordinate axes
+    drawAxesLabel(gl, worldViewProjectionMatrix, region.radius);
     if (renderParams.isAxes) {
         gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, 0.0, 0.0, 0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * region.radius,region.radius,0.0, 0.0);
@@ -577,28 +562,30 @@ function renderScene(gl, programInfo, buffers, region, xyz_label) {
         gl.disable(gl.DEPTH_TEST);
         gl.drawArrays(gl.LINES, 0, 6);
         gl.enable(gl.DEPTH_TEST);
-
-        drawAxesLabel(gl, worldViewProjectionMatrix, region.radius, xyz_label);
-    } else {
-        for (let i = 0; i < 3; i++) {
-            xyz_label.div[i].style.visibility='hidden';
-        }
     }
 }
 
-function drawAxesLabel(gl, matrix, radius, xyz_label) {
+function drawAxesLabel(gl, matrix, radius) {
     let label = ["X", "Y", "Z"];
     let color = ["red", "green", "blue"];
     let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
+    let xyz_label = [
+        document.getElementById("axe_x"),
+        document.getElementById("axe_y"),
+        document.getElementById("axe_z"),
+    ];
     for (let i = 0; i < 3; i++) {
+        if (xyz_label[i] === null) {
+            return;
+        }
         let clipSpace = transformVector(matrix, point[i]);
         clipSpace[0] = (clipSpace[0] - 1.5 * radius) / clipSpace[3];
         clipSpace[1] = (clipSpace[1] - radius) / clipSpace[3];
-        xyz_label.div[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
-        xyz_label.div[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
-        xyz_label.div[i].style.color = color[i];
-        xyz_label.div[i].style.visibility='visible';
-        xyz_label.text[i].nodeValue = label[i];
+        xyz_label[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
+        xyz_label[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
+        xyz_label[i].style.color = color[i];
+        xyz_label[i].style.visibility = renderParams.isAxes ? 'visible' : 'hidden';
+        xyz_label[i].nodeValue = label[i];
     }
 }
 

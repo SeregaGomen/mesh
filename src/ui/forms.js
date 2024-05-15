@@ -182,7 +182,7 @@ class TransformationBox extends React.Component {
 }
 
 
-class Legend extends React.Component {
+class LegendBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -199,6 +199,18 @@ class Legend extends React.Component {
                         <><span style={{color: this.state.legend.color[index]}}>█</span>{' '}{value}<br/></>
                     ))
                 }
+            </div>
+        );
+    }
+}
+
+export class AxesBox extends React.Component {
+    render() {
+        return (
+            <div id="xyz_container">
+                <div id="axe_x" className="floating-div">X</div>
+                <div id="axe_y" className="floating-div">Y</div>
+                <div id="axe_z" className="floating-div">Z</div>
             </div>
         );
     }
@@ -230,17 +242,20 @@ export class Forms extends React.Component {
                     <div className="parametersBox">
                         {
                             this.state.funIndex !== null ? <ResultBox funIndex={this.state.funIndex}
-                                                                    updateData={this.updateResult}/> : null
+                                                                      updateData={this.updateResult}/> : null
                         }
                         {
                             this.state.isFileOpened ? <RotateBox angleX={0} angleY={0} angleZ={0} isAutoRotation={true}
                                                                  sliderEnabled={false}/> : null
                         }
-                        {this.state.isFileOpened ? <VisualizationBox funIndex={this.state.funIndex} isAxes={true}/> : null}
+                        {this.state.isFileOpened ?
+                            <VisualizationBox funIndex={this.state.funIndex} isAxes={true}/> : null}
                         {this.state.isFileOpened ? <TransformationBox/> : null}
                     </div>
-                    {renderParams.funIndex !== null && this.state.isLegend ? <Legend index={this.state.funIndex}/> : null}
+                    {renderParams.funIndex !== null && this.state.isLegend ?
+                        <LegendBox index={this.state.funIndex}/> : null}
                 </div>
+                {this.state.isFileOpened && renderParams.isAxes ? <AxesBox/> : null}
             </form>
         )
     }
