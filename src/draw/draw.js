@@ -184,7 +184,7 @@ function createLegend() {
         let step = (start - stop) / 6.0;
 
         for (let i = 0; i < 7; i++) {
-            let index = i !== 7 ? Math.round(start - i * step) : stop;
+            let index = i !== 6 ? Math.round(start - i * step) : stop;
             renderParams.legend.color[i] = "rgb(" + 255 * colorTable[index][0] + ", " + 255 * colorTable[index][1] + ", " + 255 * colorTable[index][2] + ")";
             renderParams.legend.value[i] = ((x, f) => {
                 let value = x.toExponential(f);
@@ -244,9 +244,9 @@ function createBuffers(gl, mesh, funIndex, radius) {
 function getColorIndex(u) {
     let ret = 0;
     if (minU[1] !== maxU[1]) {
-        ret = Math.trunc(Math.floor((u - minU[1]) / ((maxU[1] - minU[1]) / renderParams.numColors))) - 1;
+        ret = Math.floor((u - minU[1]) / ((maxU[1] - minU[1]) / renderParams.numColors)) - 1;
     }
-    return ret < 0 ? 0 : ret;
+    return ret < 0 ? 0 : ret >= colorTable.length ? colorTable.length - 1 : ret;
 }
 
 function getGeometry(mesh, funIndex) {
@@ -576,8 +576,6 @@ function drawAxesLabel(gl, matrix, radius) {
         }
 
     }
-    let label = ["X", "Y", "Z"];
-    let color = ["red", "green", "blue"];
     let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
     let xyz_label = [
         document.getElementById("axe_x"),
@@ -593,9 +591,6 @@ function drawAxesLabel(gl, matrix, radius) {
         clipSpace[1] = (clipSpace[1] - radius) / clipSpace[3];
         xyz_label[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
         xyz_label[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
-        xyz_label[i].style.color = color[i];
-        //xyz_label[i].style.visibility = renderParams.isAxes ? 'visible' : 'hidden';
-        xyz_label[i].nodeValue = label[i];
     }
 }
 
