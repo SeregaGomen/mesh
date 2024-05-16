@@ -72,6 +72,7 @@ class ResultBox extends React.Component {
     updateCheckbox = (event) => {
         this.setState({isLegend: !event});
         this.props.updateData({funIndex: this.state.funIndex, isLegend: !event});
+        renderParams.isLegend = !event;
     }
     updateNumColors = (event) => {
         this.setState({numColors: event});
@@ -181,29 +182,6 @@ class TransformationBox extends React.Component {
     }
 }
 
-
-class LegendBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            index: this.props.index,
-            legend: renderParams.legend,
-        };
-    }
-
-    render() {
-        return (
-            <div className="legend">
-                {
-                    this.state.legend.value.map((value, index) => (
-                        <><span style={{color: this.state.legend.color[index]}}>█</span>{' '}{value}<br/></>
-                    ))
-                }
-            </div>
-        );
-    }
-}
-
 export class Forms extends React.Component {
     constructor(props) {
         super(props);
@@ -241,8 +219,8 @@ export class Forms extends React.Component {
                             <VisualizationBox funIndex={this.state.funIndex} isAxes={true}/> : null}
                         {this.state.isFileOpened ? <TransformationBox/> : null}
                     </div>
-                    {renderParams.funIndex !== null && this.state.isLegend ?
-                        <LegendBox index={this.state.funIndex}/> : null}
+                    {/*{renderParams.funIndex !== null && this.state.isLegend ?*/}
+                    {/*    <LegendBox index={this.state.funIndex}/> : null}*/}
                 </div>
             </form>
         )

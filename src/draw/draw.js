@@ -37,6 +37,7 @@ export let renderParams = {
     isMesh: true,
     isSurface: true,
     isAxes: true,
+    isLegend: true,
 }
 
 let numTri = 0;
@@ -112,7 +113,7 @@ let fragmentShaderSource = `
 `;
 
 export function renderImage() {
-    // Get A WebGL context
+    // Get a WebGL context
     /** @type {HTMLCanvasElement} */
     let canvas = document.querySelector("canvas");
     let gl = canvas.getContext("webgl");
@@ -122,11 +123,9 @@ export function renderImage() {
         return;
     }
 
-    // look up the text canvas.
+    // Get a canvas text context
     let textCanvas = document.querySelector("#text");
-    // make a 2D context for it
     let ctx = textCanvas.getContext("2d");
-
 
     // setup GLSL program
     const shaderProgram = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
@@ -162,6 +161,7 @@ export function renderImage() {
         createLegend(renderParams.mesh);
     }
 
+
     //let then = 0;
 
     // Draw the scene repeatedly
@@ -170,7 +170,7 @@ export function renderImage() {
         let deltaTime = 0.017; // now - then;
         //then = now;
 
-        renderScene(gl, ctx, programInfo, buffers, region);
+        renderScene(gl, ctx,  programInfo, buffers, region);
 
         if (renderParams.isRotation === true) {
             renderParams.rotationX += deltaTime;
@@ -182,6 +182,7 @@ export function renderImage() {
     }
     id = requestAnimationFrame(render);
 }
+
 
 function createLegend() {
     if (renderParams.mesh.func.length !== 0) {
@@ -201,6 +202,18 @@ function createLegend() {
     }
 }
 
+function showLegend(ctx) {
+    let top = 20;
+    let left = 10;
+    for (let i = 0; i < 7; i++) {
+        ctx.font = "14px monospace";
+        ctx.fillStyle = renderParams.legend.color[i];
+        ctx.fillText("█", left,  top + i * 20);
+        ctx.fillStyle = "black";
+        ctx.fillText(String(renderParams.legend.value[i]), left + ctx.measureText("12").width,  top + i * 20);
+
+    }
+}
 
 function createBuffers(gl, mesh, funIndex, radius) {
     let geometry = getGeometry(mesh, funIndex);
@@ -442,19 +455,18 @@ function getRegion(mesh) {
 }
 
 // Draw the scene
-function renderScene(gl, ctx,  programInfo, buffers, region) {
+function renderScene(gl, ctx, programInfo, buffers, region) {
     resizeCanvasToDisplaySize(gl.canvas);
     resizeCanvasToDisplaySize(ctx.canvas);
-
-    // Clear the 2D canvas
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
 
     // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
 
     // Clear the canvas AND the depth buffer.
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // Clear the 2D canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
 
     // gl.enable(gl.POLYGON_OFFSET_FILL);
     // gl.polygonOffset(0.0, -1.0);
@@ -575,19 +587,22 @@ function renderScene(gl, ctx,  programInfo, buffers, region) {
         gl.enable(gl.DEPTH_TEST);
     }
     drawAxesLabel(gl, ctx, worldViewProjectionMatrix, region.radius);
+
+    if (renderParams.isLegend && renderParams.funIndex !== null) {
+        showLegend(ctx);
+    }
 }
 
 function drawAxesLabel(gl, ctx, matrix, radius) {
-    let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
     let label = ["X", "Y", "Z"];
+    let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
     for (let i = 0; i < 3; i++) {
         let clipSpace = transformVector(matrix, point[i]);
         clipSpace[0] = (clipSpace[0] - 1.5 * radius) / clipSpace[3];
         clipSpace[1] = (clipSpace[1] - radius) / clipSpace[3];
-
         ctx.font = "14px serif";
-        ctx.fillText(renderParams.isAxes ? label[i] : "", Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width),
-            Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height));
+        ctx.fillText(renderParams.isAxes ? label[i] : "", (clipSpace[0] *  0.5 + 0.5) * gl.canvas.width,
+            (clipSpace[1] * -0.5 + 0.5) * gl.canvas.height);
     }
 }
 
