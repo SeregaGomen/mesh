@@ -5,7 +5,7 @@ import {loadFile} from "../file/file";
 export class Canvas extends React.Component {
     render() {
         return (
-            <canvas id="glcanvas" width="640" height="480">
+            <canvas id={this.props.id}>
                 Please use a browser that supports "canvas"
             </canvas>
         )

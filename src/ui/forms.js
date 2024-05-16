@@ -204,18 +204,6 @@ class LegendBox extends React.Component {
     }
 }
 
-export class AxesBox extends React.Component {
-    render() {
-        return (
-            <>
-                <div id="axe_x" className="floating-div">X</div>
-                <div id="axe_y" className="floating-div">Y</div>
-                <div id="axe_z" className="floating-div">Z</div>
-            </>
-        );
-    }
-}
-
 export class Forms extends React.Component {
     constructor(props) {
         super(props);
@@ -238,7 +226,8 @@ export class Forms extends React.Component {
             <form>
                 <LoadButton updateData={this.updateFile}/>
                 <div className="container">
-                    <Canvas/>
+                    <Canvas id={"gl"}/>
+                    <Canvas id={"text"}/>
                     <div className="parametersBox">
                         {
                             this.state.funIndex !== null ? <ResultBox funIndex={this.state.funIndex}
@@ -255,7 +244,6 @@ export class Forms extends React.Component {
                     {renderParams.funIndex !== null && this.state.isLegend ?
                         <LegendBox index={this.state.funIndex}/> : null}
                 </div>
-                {this.state.isFileOpened && renderParams.isAxes ? <AxesBox/> : null}
             </form>
         )
     }
