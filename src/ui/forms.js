@@ -95,9 +95,9 @@ class ResultBox extends React.Component {
                         {funcList}
                     </select>
                 </label>
-                <CheckBox isChecked={this.state.isLegend} caption={"Legend"} updateData={this.updateCheckbox}/>
                 <Slider min={32} max={256} step={32} value={this.state.numColors} enabled={true} caption={"Colors:"}
                         updateData={this.updateNumColors}/>
+                <CheckBox isChecked={this.state.isLegend} caption={"Legend"} updateData={this.updateCheckbox}/>
 
 
             </fieldset>
