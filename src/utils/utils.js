@@ -1,5 +1,3 @@
-let MatType = Float32Array;
-
 //
 // Initialize a shader program
 //
@@ -47,60 +45,24 @@ export function radToDeg(r) {
     return r * 180.0 / Math.PI;
 }
 
-
-/**
- * Computes the cross product of 2 vectors3s
- * @param {Vector3} a a
- * @param {Vector3} b b
- * @param {Vector3} dst optional vector3 to store result
- * @return {Vector3} dst or new Vector3 if not provided
- * @memberOf module:webgl-3d-math
- */
 function cross(a, b, dst) {
-    dst = dst || new MatType(3);
+    dst = dst || new Float32Array(3);
     dst[0] = a[1] * b[2] - a[2] * b[1];
     dst[1] = a[2] * b[0] - a[0] * b[2];
     dst[2] = a[0] * b[1] - a[1] * b[0];
     return dst;
 }
 
-/**
- * subtracts 2 vectors3s
- * @param {Vector3} a a
- * @param {Vector3} b b
- * @param {Vector3} dst optional vector3 to store result
- * @return {Vector3} dst or new Vector3 if not provided
- * @memberOf module:webgl-3d-math
- */
 function subtractVectors(a, b, dst) {
-    dst = dst || new MatType(3);
+    dst = dst || new Float32Array(3);
     dst[0] = a[0] - b[0];
     dst[1] = a[1] - b[1];
     dst[2] = a[2] - b[2];
     return dst;
 }
 
-/**
- * Computes a 4-by-4 perspective transformation matrix given the angular height
- * of the frustum, the aspect ratio, and the near and far clipping planes.  The
- * arguments define a frustum extending in the negative z direction.  The given
- * angle is the vertical angle of the frustum, and the horizontal angle is
- * determined to produce the given aspect ratio.  The arguments near and far are
- * the distances to the near and far clipping planes.  Note that near and far
- * are not z coordinates, but rather they are distances along the negative
- * z-axis.  The matrix generated sends the viewing frustum to the unit box.
- * We assume a unit box extending from -1 to 1 in the x and y dimensions and
- * from -1 to 1 in the z dimension.
- * @param {number} fieldOfViewInRadians field of view in y axis.
- * @param {number} aspect aspect of viewport (width / height)
- * @param {number} near near Z clipping plane
- * @param {number} far far Z clipping plane
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
 export function perspective(fieldOfViewInRadians, aspect, near, far, dst) {
-    dst = dst || new MatType(16);
+    dst = dst || new Float32Array(16);
     let f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
     let rangeInv = 1.0 / (near - far);
 
@@ -124,20 +86,8 @@ export function perspective(fieldOfViewInRadians, aspect, near, far, dst) {
     return dst;
 }
 
-/**
- * Creates a lookAt matrix.
- * This is a world matrix for a camera. In other words it will transform
- * from the origin to a place and orientation in the world. For a view
- * matrix take the inverse of this.
- * @param {Vector3} cameraPosition position of the camera
- * @param {Vector3} target position of the target
- * @param {Vector3} up direction
- * @param {Matrix4} [dst] optional matrix to store result
- * @return {Matrix4} dst or a new matrix if none provided
- * @memberOf module:webgl-3d-math
- */
 export function lookAt(cameraPosition, target, up, dst) {
-    dst = dst || new MatType(16);
+    dst = dst || new Float32Array(16);
     let zAxis = normalize(subtractVectors(cameraPosition, target));
     let xAxis = normalize(cross(up, zAxis));
     let yAxis = normalize(cross(zAxis, xAxis));
@@ -162,15 +112,8 @@ export function lookAt(cameraPosition, target, up, dst) {
     return dst;
 }
 
-// /**
-//  * normalizes a vector.
-//  * @param {Vector3} v vector to normalize
-//  * @param {Vector3} dst optional vector3 to store result
-//  * @return {Vector3} dst or new Vector3 if not provided
-//  * @memberOf module:webgl-3d-math
-//  */
 export function normalize(v, dst) {
-    dst = dst || new MatType(3);
+    dst = dst || new Float32Array(3);
     let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     // make sure we don't divide by 0.
     if (length > 0.00001) {
@@ -181,31 +124,24 @@ export function normalize(v, dst) {
     return dst;
 }
 
-// /**
-//  * Computes the inverse of a matrix.
-//  * @param {Matrix4} m matrix to compute inverse of
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
 export function inverse(m, dst) {
-    dst = dst || new MatType(16);
-    let m00 = m[0 * 4 + 0];
-    let m01 = m[0 * 4 + 1];
-    let m02 = m[0 * 4 + 2];
-    let m03 = m[0 * 4 + 3];
-    let m10 = m[1 * 4 + 0];
-    let m11 = m[1 * 4 + 1];
-    let m12 = m[1 * 4 + 2];
-    let m13 = m[1 * 4 + 3];
-    let m20 = m[2 * 4 + 0];
-    let m21 = m[2 * 4 + 1];
-    let m22 = m[2 * 4 + 2];
-    let m23 = m[2 * 4 + 3];
-    let m30 = m[3 * 4 + 0];
-    let m31 = m[3 * 4 + 1];
-    let m32 = m[3 * 4 + 2];
-    let m33 = m[3 * 4 + 3];
+    dst = dst || new Float32Array(16);
+    let m00 = m[0];
+    let m01 = m[1];
+    let m02 = m[2];
+    let m03 = m[3];
+    let m10 = m[4];
+    let m11 = m[5];
+    let m12 = m[6];
+    let m13 = m[7];
+    let m20 = m[8];
+    let m21 = m[9];
+    let m22 = m[10];
+    let m23 = m[11];
+    let m30 = m[12];
+    let m31 = m[13];
+    let m32 = m[14];
+    let m33 = m[15];
     let tmp_0  = m22 * m33;
     let tmp_1  = m32 * m23;
     let tmp_2  = m12 * m33;
@@ -274,51 +210,40 @@ export function inverse(m, dst) {
     return dst;
 }
 
-// /**
-//  * Takes two 4-by-4 matrices, a and b, and computes the product in the order
-//  * that pre-composes b with a.  In other words, the matrix returned will
-//  * transform by b first and then a.  Note this is subtly different from just
-//  * multiplying the matrices together.  For given a and b, this function returns
-//  * the same object in both row-major and column-major mode.
-//  * @param {Matrix4} a A matrix.
-//  * @param {Matrix4} b A matrix.
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  */
 export function multiply(a, b, dst) {
-    dst = dst || new MatType(16);
-    let b00 = b[0 * 4 + 0];
-    let b01 = b[0 * 4 + 1];
-    let b02 = b[0 * 4 + 2];
-    let b03 = b[0 * 4 + 3];
-    let b10 = b[1 * 4 + 0];
-    let b11 = b[1 * 4 + 1];
-    let b12 = b[1 * 4 + 2];
-    let b13 = b[1 * 4 + 3];
-    let b20 = b[2 * 4 + 0];
-    let b21 = b[2 * 4 + 1];
-    let b22 = b[2 * 4 + 2];
-    let b23 = b[2 * 4 + 3];
-    let b30 = b[3 * 4 + 0];
-    let b31 = b[3 * 4 + 1];
-    let b32 = b[3 * 4 + 2];
-    let b33 = b[3 * 4 + 3];
-    let a00 = a[0 * 4 + 0];
-    let a01 = a[0 * 4 + 1];
-    let a02 = a[0 * 4 + 2];
-    let a03 = a[0 * 4 + 3];
-    let a10 = a[1 * 4 + 0];
-    let a11 = a[1 * 4 + 1];
-    let a12 = a[1 * 4 + 2];
-    let a13 = a[1 * 4 + 3];
-    let a20 = a[2 * 4 + 0];
-    let a21 = a[2 * 4 + 1];
-    let a22 = a[2 * 4 + 2];
-    let a23 = a[2 * 4 + 3];
-    let a30 = a[3 * 4 + 0];
-    let a31 = a[3 * 4 + 1];
-    let a32 = a[3 * 4 + 2];
-    let a33 = a[3 * 4 + 3];
+    dst = dst || new Float32Array(16);
+    let b00 = b[0];
+    let b01 = b[1];
+    let b02 = b[2];
+    let b03 = b[3];
+    let b10 = b[4];
+    let b11 = b[5];
+    let b12 = b[6];
+    let b13 = b[7];
+    let b20 = b[8];
+    let b21 = b[9];
+    let b22 = b[10];
+    let b23 = b[11];
+    let b30 = b[12];
+    let b31 = b[13];
+    let b32 = b[14];
+    let b33 = b[15];
+    let a00 = a[0];
+    let a01 = a[1];
+    let a02 = a[2];
+    let a03 = a[3];
+    let a10 = a[4];
+    let a11 = a[5];
+    let a12 = a[6];
+    let a13 = a[7];
+    let a20 = a[8];
+    let a21 = a[9];
+    let a22 = a[10];
+    let a23 = a[11];
+    let a30 = a[12];
+    let a31 = a[13];
+    let a32 = a[14];
+    let a33 = a[15];
     dst[ 0] = b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30;
     dst[ 1] = b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31;
     dst[ 2] = b00 * a02 + b01 * a12 + b02 * a22 + b03 * a32;
@@ -338,15 +263,8 @@ export function multiply(a, b, dst) {
     return dst;
 }
 
-// /**
-//  * Transposes a matrix.
-//  * @param {Matrix4} m matrix to transpose.
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
 export function transpose(m, dst) {
-    dst = dst || new MatType(16);
+    dst = dst || new Float32Array(16);
 
     dst[ 0] = m[0];
     dst[ 1] = m[4];
@@ -368,15 +286,8 @@ export function transpose(m, dst) {
     return dst;
 }
 
-// /**
-//  * Makes an x rotation matrix
-//  * @param {number} angleInRadians amount to rotate
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
 export function xRotation(angleInRadians, dst) {
-    dst = dst || new MatType(16);
+    dst = dst || new Float32Array(16);
     let c = Math.cos(angleInRadians);
     let s = Math.sin(angleInRadians);
 
@@ -400,103 +311,14 @@ export function xRotation(angleInRadians, dst) {
     return dst;
 }
 
-// /**
-//  * Multiply by an x rotation matrix
-//  * @param {Matrix4} m matrix to multiply
-//  * @param {number} angleInRadians amount to rotate
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
-export function xRotate(m, angleInRadians, dst) {
-    // this is the optimized version of
-    // return multiply(m, xRotation(angleInRadians), dst);
-    dst = dst || new MatType(16);
-
-    let m10 = m[4];
-    let m11 = m[5];
-    let m12 = m[6];
-    let m13 = m[7];
-    let m20 = m[8];
-    let m21 = m[9];
-    let m22 = m[10];
-    let m23 = m[11];
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
-
-    dst[4]  = c * m10 + s * m20;
-    dst[5]  = c * m11 + s * m21;
-    dst[6]  = c * m12 + s * m22;
-    dst[7]  = c * m13 + s * m23;
-    dst[8]  = c * m20 - s * m10;
-    dst[9]  = c * m21 - s * m11;
-    dst[10] = c * m22 - s * m12;
-    dst[11] = c * m23 - s * m13;
-
-    if (m !== dst) {
-        dst[ 0] = m[ 0];
-        dst[ 1] = m[ 1];
-        dst[ 2] = m[ 2];
-        dst[ 3] = m[ 3];
-        dst[12] = m[12];
-        dst[13] = m[13];
-        dst[14] = m[14];
-        dst[15] = m[15];
-    }
-
-    return dst;
-}
-
-// /**
-//  * Makes an y rotation matrix
-//  * @param {number} angleInRadians amount to rotate
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
-export function yRotation(angleInRadians, dst) {
-    dst = dst || new MatType(16);
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
-
-    dst[ 0] = c;
-    dst[ 1] = 0;
-    dst[ 2] = -s;
-    dst[ 3] = 0;
-    dst[ 4] = 0;
-    dst[ 5] = 1;
-    dst[ 6] = 0;
-    dst[ 7] = 0;
-    dst[ 8] = s;
-    dst[ 9] = 0;
-    dst[10] = c;
-    dst[11] = 0;
-    dst[12] = 0;
-    dst[13] = 0;
-    dst[14] = 0;
-    dst[15] = 1;
-
-    return dst;
-}
-
-// /**
-//  * Multiply by an y rotation matrix
-//  * @param {Matrix4} m matrix to multiply
-//  * @param {number} angleInRadians amount to rotate
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
 export function yRotate(m, angleInRadians, dst) {
-    // this is the optimized version of
-    // return multiply(m, yRotation(angleInRadians), dst);
-    dst = dst || new MatType(16);
+    dst = dst || new Float32Array(16);
 
-    let m00 = m[0 * 4 + 0];
-    let m01 = m[0 * 4 + 1];
-    let m02 = m[0 * 4 + 2];
-    let m03 = m[0 * 4 + 3];
-    let m20 = m[2 * 4 + 0];
+    let m00 = m[0];
+    let m01 = m[1];
+    let m02 = m[2];
+    let m03 = m[3];
+    let m20 = m[2 * 4];
     let m21 = m[2 * 4 + 1];
     let m22 = m[2 * 4 + 2];
     let m23 = m[2 * 4 + 3];
@@ -526,59 +348,19 @@ export function yRotate(m, angleInRadians, dst) {
     return dst;
 }
 
-// /**
-//  * Makes an z rotation matrix
-//  * @param {number} angleInRadians amount to rotate
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
-export function zRotation(angleInRadians, dst) {
-    dst = dst || new MatType(16);
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
-
-    dst[ 0] = c;
-    dst[ 1] = s;
-    dst[ 2] = 0;
-    dst[ 3] = 0;
-    dst[ 4] = -s;
-    dst[ 5] = c;
-    dst[ 6] = 0;
-    dst[ 7] = 0;
-    dst[ 8] = 0;
-    dst[ 9] = 0;
-    dst[10] = 1;
-    dst[11] = 0;
-    dst[12] = 0;
-    dst[13] = 0;
-    dst[14] = 0;
-    dst[15] = 1;
-
-    return dst;
-}
-
-// /**
-//  * Multiply by an z rotation matrix
-//  * @param {Matrix4} m matrix to multiply
-//  * @param {number} angleInRadians amount to rotate
-//  * @param {Matrix4} [dst] optional matrix to store result
-//  * @return {Matrix4} dst or a new matrix if none provided
-//  * @memberOf module:webgl-3d-math
-//  */
 export function zRotate(m, angleInRadians, dst) {
     // This is the optimized version of
     // return multiply(m, zRotation(angleInRadians), dst);
-    dst = dst || new MatType(16);
+    dst = dst || new Float32Array(16);
 
-    let m00 = m[0 * 4 + 0];
-    let m01 = m[0 * 4 + 1];
-    let m02 = m[0 * 4 + 2];
-    let m03 = m[0 * 4 + 3];
-    let m10 = m[1 * 4 + 0];
-    let m11 = m[1 * 4 + 1];
-    let m12 = m[1 * 4 + 2];
-    let m13 = m[1 * 4 + 3];
+    let m00 = m[0];
+    let m01 = m[1];
+    let m02 = m[2];
+    let m03 = m[3];
+    let m10 = m[4];
+    let m11 = m[5];
+    let m12 = m[6];
+    let m13 = m[7];
     let c = Math.cos(angleInRadians);
     let s = Math.sin(angleInRadians);
 
@@ -605,17 +387,8 @@ export function zRotate(m, angleInRadians, dst) {
     return dst;
 }
 
-/**
- * Takes a  matrix and a vector with 4 entries, transforms that vector by
- * the matrix, and returns the result as a vector with 4 entries.
- * @param {Matrix4} m The matrix.
- * @param {Vector4} v The point in homogenous coordinates.
- * @param {Vector4} dst optional vector4 to store result
- * @return {Vector4} dst or new Vector4 if not provided
- * @memberOf module:webgl-3d-math
- */
-export function transformVector(m, v, dst) {
-    dst = dst || new MatType(4);
+export function transformVector(m, v) {
+    let dst= new Float32Array(4);
     for (let i = 0; i < 4; ++i) {
         dst[i] = 0.0;
         for (let j = 0; j < 4; ++j) {
