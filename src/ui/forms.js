@@ -207,11 +207,11 @@ class LegendBox extends React.Component {
 export class AxesBox extends React.Component {
     render() {
         return (
-            <div id="xyz_container">
+            <>
                 <div id="axe_x" className="floating-div">X</div>
                 <div id="axe_y" className="floating-div">Y</div>
                 <div id="axe_z" className="floating-div">Z</div>
-            </div>
+            </>
         );
     }
 }

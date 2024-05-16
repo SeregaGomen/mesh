@@ -566,16 +566,6 @@ function renderScene(gl, programInfo, buffers, region) {
 }
 
 function drawAxesLabel(gl, matrix, radius) {
-    let div = document.getElementById("xyz_container")
-    if (div !== null) {
-        if (renderParams.isAxes) {
-            div.style.visibility = 'visible';
-        } else {
-            div.style.visibility = 'hidden';
-            return;
-        }
-
-    }
     let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
     let xyz_label = [
         document.getElementById("axe_x"),
@@ -591,6 +581,7 @@ function drawAxesLabel(gl, matrix, radius) {
         clipSpace[1] = (clipSpace[1] - radius) / clipSpace[3];
         xyz_label[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
         xyz_label[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
+        xyz_label[i].style.visibility = renderParams.isAxes ? 'visible' : 'hidden';
     }
 }
 
