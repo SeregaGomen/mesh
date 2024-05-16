@@ -112,7 +112,7 @@ let fragmentShaderSource = `
 `;
 
 export function renderImage() {
-    // Get A WebGL context
+    // Get a WebGL context
     /** @type {HTMLCanvasElement} */
     let canvas = document.querySelector("canvas");
     let gl = canvas.getContext("webgl");
@@ -121,6 +121,11 @@ export function renderImage() {
         //console.log("Failed to get the rendering context for WebGL");
         return;
     }
+
+    // Get a canvas text context
+    let textCanvas = document.querySelector("#text");
+    let ctx = textCanvas.getContext("2d");
+
     // setup GLSL program
     const shaderProgram = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
     const programInfo = {
@@ -163,7 +168,7 @@ export function renderImage() {
         let deltaTime = 0.017; // now - then;
         //then = now;
 
-        renderScene(gl, programInfo, buffers, region);
+        renderScene(gl, ctx,  programInfo, buffers, region);
 
         if (renderParams.isRotation === true) {
             renderParams.rotationX += deltaTime;
@@ -435,14 +440,18 @@ function getRegion(mesh) {
 }
 
 // Draw the scene
-function renderScene(gl, programInfo, buffers, region) {
+function renderScene(gl, ctx, programInfo, buffers, region) {
     resizeCanvasToDisplaySize(gl.canvas);
+    resizeCanvasToDisplaySize(ctx.canvas);
 
     // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
 
     // Clear the canvas AND the depth buffer.
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // Clear the 2D canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
 
     // gl.enable(gl.POLYGON_OFFSET_FILL);
     // gl.polygonOffset(0.0, -1.0);
@@ -562,26 +571,19 @@ function renderScene(gl, programInfo, buffers, region) {
         gl.drawArrays(gl.LINES, 0, 6);
         gl.enable(gl.DEPTH_TEST);
     }
-    drawAxesLabel(gl, worldViewProjectionMatrix, region.radius);
+    drawAxesLabel(gl, ctx, worldViewProjectionMatrix, region.radius);
 }
 
-function drawAxesLabel(gl, matrix, radius) {
+function drawAxesLabel(gl, ctx, matrix, radius) {
+    let label = ["X", "Y", "Z"];
     let point = [[0.06 * radius, 0, 0, 1], [0.0, 0.06 * radius, 0, 1], [0.0, 0.0, 0.06 * radius, 1]];
-    let xyz_label = [
-        document.getElementById("axe_x"),
-        document.getElementById("axe_y"),
-        document.getElementById("axe_z"),
-    ];
     for (let i = 0; i < 3; i++) {
-        if (xyz_label[i] === null) {
-            return;
-        }
         let clipSpace = transformVector(matrix, point[i]);
         clipSpace[0] = (clipSpace[0] - 1.5 * radius) / clipSpace[3];
         clipSpace[1] = (clipSpace[1] - radius) / clipSpace[3];
-        xyz_label[i].style.left = Math.floor((clipSpace[0] *  0.5 + 0.5) * gl.canvas.width) + "px";
-        xyz_label[i].style.top  = Math.floor((clipSpace[1] * -0.5 + 0.5) * gl.canvas.height) + "px";
-        xyz_label[i].style.visibility = renderParams.isAxes ? 'visible' : 'hidden';
+        ctx.font = "14px serif";
+        ctx.fillText(renderParams.isAxes ? label[i] : "", (clipSpace[0] *  0.5 + 0.5) * gl.canvas.width,
+            (clipSpace[1] * -0.5 + 0.5) * gl.canvas.height);
     }
 }
 
