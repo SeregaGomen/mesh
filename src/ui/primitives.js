@@ -22,7 +22,7 @@ export class LoadButton extends React.Component {
     render() {
         return (
             <input type="file"
-                   accept=".mesh, .msh, .vol, .qres, .txt"
+                   accept=".mesh, .msh, .vol, .qres, .res, .txt"
                    onChange={(event) => {
                        if (event.target.files[0] === undefined) {
                            console.log("File is undefined!");

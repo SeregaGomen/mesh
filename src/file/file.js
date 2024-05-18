@@ -3,8 +3,12 @@ import {renderParams} from "../draw/draw";
 import {createMatrix} from "../utils/utils";
 
 export function loadMesh(fileData, mesh) {
+    let row = getRow(fileData).row;
+    if (row === "Mesh") {
+        row = getRow(fileData).row;
+    }
     // Get FE type
-    switch (getRow(fileData).row) {
+    switch (row) {
         case "fe2d3":
         case "3":
             mesh.feType = "fe2d3";
@@ -303,17 +307,20 @@ export function loadMsh(fileData, mesh) {
     return true;
 }
 
-export function loadQres(fileData, mesh) {
+export function loadRes(fileData, mesh) {
     // Get signature
-    if (getRow(fileData).row !== "QFEM results file") {
-        console.log("Wrong QRES-file format");
+    let row = getRow(fileData).row;
+    if (row !== "QFEM results file" && row !== "FEM Solver Results File") {
+        console.log("Wrong Results-file format");
         return false;
     }
     // Get mesh
     if (!loadMesh(fileData, mesh)) {
         return false;
     }
-    getRow(fileData);
+    if (getRow(fileData).row === "Results") {
+        getRow(fileData);
+    }
     return loadResults(fileData, mesh);
 }
 
@@ -632,8 +639,9 @@ export function loadFile(file) {
                 case "MSH":
                     ok = loadMsh(fileData, mesh);
                     break;
+                case "RES":
                 case "QRES":
-                    ok = loadQres(fileData, mesh);
+                    ok = loadRes(fileData, mesh);
                     renderParams.funIndex = 0;
                     break;
                 case "TXT":
