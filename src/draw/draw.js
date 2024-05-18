@@ -41,7 +41,7 @@ export let renderParams = {
 }
 
 let numTri = 0;
-let numElm = 0;
+let numSeg = 0;
 let minU = [0.0, 0.0];
 let maxU = [0.0, 0.0];
 let colorTable = [];
@@ -217,8 +217,8 @@ function showLegend(ctx) {
 
 function createBuffers(gl, mesh, funIndex, radius) {
     let geometry = getGeometry(mesh, funIndex);
-    numTri = geometry.surface_positions.length;
-    //numElm = geometry.mesh_positions.length;
+    //numTri = geometry.surface_positions.length;
+    //numSeg = geometry.mesh_positions.length;
     // Create a buffer to put positions in
     let positionBuffer = gl.createBuffer();
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
@@ -307,7 +307,8 @@ function getGeometry(mesh, funIndex) {
         }
         mesh_positions.push(mesh.x[elm[i][0]][0], mesh.x[elm[i][0]][1], mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][0]][2] : 0.0);
     }
-    numElm = mesh_positions.length;
+    numTri = positions.length / 3;
+    numSeg = mesh_positions.length / 3;
     return {surface_positions: positions, mesh_positions: mesh_positions, normals: normals, colors: colors}
 }
 
@@ -568,7 +569,7 @@ function renderScene(gl, ctx, programInfo, buffers, region) {
     gl.vertexAttribPointer(programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
     // Draw the mesh
     if (renderParams.isMesh) {
-        gl.drawArrays(gl.LINES, offset, numElm);
+        gl.drawArrays(gl.LINES, offset, numSeg);
     }
 
 
