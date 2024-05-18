@@ -431,7 +431,7 @@ export function loadTxt(fileData, mesh) {
                     u[j][i] = Number(words[j + 1]);
                 }
             }
-            for (let j = 0; j < 9; j++) {
+            for (let j = 1; j < 9; j++) {
                 let minMax = getMinMax(u[j]);
                 mesh.func.push({name: names[j] + "(" + String(iter) + ")", results: u[j], minU: minMax.minU, maxU: minMax.maxU});
             }
