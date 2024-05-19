@@ -251,6 +251,13 @@ class TransformationObjectBox extends React.Component {
                     </select>
                 </label>
                 <div>
+                    <input type="number" onChange={
+                        (event) => {
+                            this.setState({ratio: Number(event.target.value)})
+                        }
+                    }/>
+                </div>
+                <div>
                     <button onClick={
                         () => {
                             renderParams.isTransformation = true;
@@ -259,8 +266,13 @@ class TransformationObjectBox extends React.Component {
                             renderParams.transformParam.index[2] = this.state.z_index;
                             renderParams.transformParam.ratio = this.state.ratio;
                             renderImage();
-                        }
-                    } type={"button"}>Apply
+                        }} type={"button"}>Apply
+                    </button>
+                    <button onClick={
+                        () => {
+                            renderParams.isTransformation = false;
+                            renderImage();
+                        }} type={"button"}>Restore
                     </button>
                 </div>
             </fieldset>
@@ -287,6 +299,7 @@ export class Forms extends React.Component {
         this.setState({funIndex: value.funIndex});
         this.setState({isLegend: value.isLegend});
     }
+
     render() {
         return (
             <form>
