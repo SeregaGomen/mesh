@@ -144,7 +144,7 @@ class VisualizationBox extends React.Component {
     }
 }
 
-class TransformationBox extends React.Component {
+class TransformationSceneBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -168,19 +168,106 @@ class TransformationBox extends React.Component {
     }
 
     render() {
+        let funcList = renderParams.mesh.func.map((v, i) => (
+            <option value={i}>{v.name}</option>
+        ));
+
         return (
-            <fieldset className="transformationBox">
-                <legend>Transformation</legend>
-                <Slider min={-1} max={1} step={0.25} value={this.state.translateX} enabled={true} caption={"X:"}
+            <fieldset className="transformationSceneBox">
+                <legend>Transformation scene</legend>
+                <Slider min={-1} max={1} step={0.25} value={this.state.translateX} enabled={true}
+                        caption={"Translate X:"}
                         updateData={this.updateTranslateX}/>
-                <Slider min={-1} max={1} step={0.25} value={this.state.translateY} enabled={true} caption={"Y:"}
+                <Slider min={-1} max={1} step={0.25} value={this.state.translateY} enabled={true}
+                        caption={"Translate Y:"}
                         updateData={this.updateTranslateY}/>
                 <Slider min={0.5} max={5} step={0.5} value={this.state.scale} enabled={true} caption={"Scale:"}
                         updateData={this.updateScale}/>
+                <label>Transformation X:&nbsp;
+                    <select
+                        name="Function"
+                        size={1}
+                        onChange={this.updateFunction}>
+                        {funcList}
+                    </select>
+                </label>
+
             </fieldset>
         )
     }
 }
+
+class TransformationObjectBox extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            x_index: 0,
+            y_index: 1,
+            z_index: 2,
+            ratio: 1.0E+4,
+        };
+    }
+    render() {
+        return (
+            <fieldset className="transformationObjectBox">
+                <legend>Transformation object</legend>
+                <label>Transformation X:&nbsp;
+                    <select
+                        name="Function"
+                        size={1}
+                        onChange={(event) => this.setState({
+                            x_index: event.target.value
+                        })}>
+                        {
+                            renderParams.mesh.func.map((v, i) => (
+                                <option value={i} selected={i===0}>{v.name}</option>))
+                        }
+                    </select>
+                </label>
+                <label>Transformation Y:&nbsp;
+                    <select
+                        name="Function"
+                        size={1}
+                        onChange={(event) => this.setState({
+                            y_index: event.target.value
+                        })}>
+                        {
+                            renderParams.mesh.func.map((v, i) => (
+                                <option value={i} selected={i===1}>{v.name}</option>))
+                        }
+                    </select>
+                </label>
+                <label>Transformation Z:&nbsp;
+                    <select
+                        name="Function"
+                        size={1}
+                        onChange={(event) => this.setState({
+                            z_index: event.target.value
+                        })}>
+                        {
+                            renderParams.mesh.func.map((v, i) => (
+                                <option value={i} selected={i===2}>{v.name}</option>))
+                        }
+                    </select>
+                </label>
+                <div>
+                    <button onClick={
+                        () => {
+                            renderParams.isTransformation = true;
+                            renderParams.transformParam.index[0] = this.state.x_index;
+                            renderParams.transformParam.index[1] = this.state.y_index;
+                            renderParams.transformParam.index[2] = this.state.z_index;
+                            renderParams.transformParam.ratio = this.state.ratio;
+                            renderImage();
+                        }
+                    } type={"button"}>Apply
+                    </button>
+                </div>
+            </fieldset>
+        )
+    }
+}
+
 
 export class Forms extends React.Component {
     constructor(props) {
@@ -191,6 +278,7 @@ export class Forms extends React.Component {
             isLegend: true,
         };
     }
+
     updateFile = (value) => {
         this.setState({isFileOpened: value.isFileOpened});
         this.setState({funIndex: value.funIndex});
@@ -217,10 +305,9 @@ export class Forms extends React.Component {
                         }
                         {this.state.isFileOpened ?
                             <VisualizationBox funIndex={this.state.funIndex} isAxes={true}/> : null}
-                        {this.state.isFileOpened ? <TransformationBox/> : null}
+                        {this.state.isFileOpened ? <TransformationSceneBox/> : null}
+                        {renderParams.funIndex !== null ? <TransformationObjectBox/> : null}
                     </div>
-                    {/*{renderParams.funIndex !== null && this.state.isLegend ?*/}
-                    {/*    <LegendBox index={this.state.funIndex}/> : null}*/}
                 </div>
             </form>
         )

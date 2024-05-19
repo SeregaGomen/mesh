@@ -38,6 +38,11 @@ export let renderParams = {
     isSurface: true,
     isAxes: true,
     isLegend: true,
+    isTransformation: false,
+    transformParam: {
+        index: [0, 1, 2],
+        ratio: 1.0,
+    }
 }
 
 let numTri = 0;
@@ -152,13 +157,13 @@ export function renderImage() {
     minU = [0.0, 0.0];
     maxU = [0.0, 0.0];
 
-    let region = getRegion(renderParams.mesh);
-
+    let region = getRegion();
+    setColorTable();
     // Create a buffers to put positions in
-    let buffers = createBuffers(gl, renderParams.mesh, renderParams.funIndex, region.radius);
+    let buffers = createBuffers(gl, region.radius);
 
     if (renderParams.funIndex !== null) {
-        createLegend(renderParams.mesh);
+        createLegend();
     }
 
 
@@ -215,10 +220,8 @@ function showLegend(ctx) {
     }
 }
 
-function createBuffers(gl, mesh, funIndex, radius) {
-    let geometry = getGeometry(mesh, funIndex);
-    //numTri = geometry.surface_positions.length;
-    //numSeg = geometry.mesh_positions.length;
+function createBuffers(gl, radius) {
+    let geometry = getGeometry();
     // Create a buffer to put positions in
     let positionBuffer = gl.createBuffer();
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
@@ -269,19 +272,11 @@ function getColorIndex(u) {
     return ret < 0 ? 0 : ret >= colorTable.length ? colorTable.length - 1 : ret;
 }
 
-function getGeometry(mesh, funIndex) {
-    if (mesh.func.length !== 0) {
-        minU[0] = mesh.func[funIndex].minU;
-        maxU[0] = mesh.func[funIndex].maxU;
-        minU[1] = Math.abs(minU[0]) > Math.abs(maxU[0]) ? -Math.abs(minU[0]) : -Math.abs(maxU[0]);
-        maxU[1] = Math.abs(minU[1]);
-    }
-    setColorTable();
-
-
+function getGeometry() {
     let index = [[0, 1, 2], [2, 3, 0]];
-    let elm = mesh.feType.indexOf("fe2d") === -1 ? mesh.be : mesh.fe;
-    let len = mesh.feType === "fe2d4" || mesh.feType === "fe3d4s" || mesh.feType === "fe3d8" ? 2 : 1;
+    let elm = renderParams.mesh.feType.indexOf("fe2d") === -1 ? renderParams.mesh.be : renderParams.mesh.fe;
+    let len = renderParams.mesh.feType === "fe2d4" || renderParams.mesh.feType === "fe3d4s" ||
+                       renderParams.mesh.feType === "fe3d8" ? 2 : 1;
     let positions = [];
     let normals = [];
     let colors = [];
@@ -291,21 +286,26 @@ function getGeometry(mesh, funIndex) {
             let tri = []
             for (let k = 0; k < 3; k++) {
                 tri.push([
-                    mesh.x[elm[i][index[j][k]]][0],
-                    mesh.x[elm[i][index[j][k]]][1],
-                    mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][index[j][k]]][2] : 0.0,
-                    mesh.func.length !== 0 ? mesh.func[funIndex].results[elm[i][index[j][k]]] : 0.0
+                    tX(elm[i][index[j][k]], 0),
+                    tX(elm[i][index[j][k]], 1),
+                    renderParams.mesh.feType.indexOf("fe2d") === -1 ? tX(elm[i][index[j][k]], 2) : 0.0,
+                    renderParams.mesh.func.length !== 0 ?
+                        renderParams.mesh.func[renderParams.funIndex].results[elm[i][index[j][k]]] : 0.0
                 ]);
             }
             setTriangle3d(tri, positions, normals, colors);
         }
 
-        mesh_positions.push(mesh.x[elm[i][0]][0], mesh.x[elm[i][0]][1], mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][0]][2] : 0.0);
+        mesh_positions.push(tX(elm[i][0], 0), tX(elm[i][0], 1),
+            renderParams.mesh.feType.indexOf("fe2d") === -1 ? tX(elm[i][0], 2) : 0.0);
         for (let j = 1; j < (len === 1 ? 3 : 4); j++) {
-            mesh_positions.push(mesh.x[elm[i][j]][0], mesh.x[elm[i][j]][1], mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][j]][2] : 0.0);
-            mesh_positions.push(mesh.x[elm[i][j]][0], mesh.x[elm[i][j]][1], mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][j]][2] : 0.0);
+            mesh_positions.push(tX(elm[i][j], 0), tX(elm[i][j], 1),
+                renderParams.mesh.feType.indexOf("fe2d") === -1 ? tX(elm[i][j], 2) : 0.0,
+                tX(elm[i][j],0), tX(elm[i][j], 1),
+                renderParams.mesh.feType.indexOf("fe2d") === -1 ? tX(elm[i][j], 2) : 0.0);
         }
-        mesh_positions.push(mesh.x[elm[i][0]][0], mesh.x[elm[i][0]][1], mesh.feType.indexOf("fe2d") === -1 ? mesh.x[elm[i][0]][2] : 0.0);
+        mesh_positions.push(tX(elm[i][0], 0), tX(elm[i][0], 1),
+            renderParams.mesh.feType.indexOf("fe2d") === -1 ? tX(elm[i][0], 2) : 0.0);
     }
     numTri = positions.length / 3;
     numSeg = mesh_positions.length / 3;
@@ -319,6 +319,13 @@ function setColorTable() {
     let blue = 1.0;
     //let red = 0.24;
     let red = 1.0;
+
+    if (renderParams.funIndex !== null) {
+        minU[0] = renderParams.mesh.func[renderParams.funIndex].minU;
+        maxU[0] = renderParams.mesh.func[renderParams.funIndex].maxU;
+        minU[1] = Math.abs(minU[0]) > Math.abs(maxU[0]) ? -Math.abs(minU[0]) : -Math.abs(maxU[0]);
+        maxU[1] = Math.abs(minU[1]);
+    }
 
     colorTable = [];
     for (let i = 0; i < renderParams.numColors; i++) {
@@ -361,8 +368,8 @@ function setTriangle3d(tri, positions, normals, colors) {
         for (let i = 0; i < 3; i++) {
             positions.push(tri[index[i]][0], tri[index[i]][1], tri[index[i]][2]);
             normals.push(normal[0], normal[1], normal[2]);
+            colors.push(colorTable[colorIndex[0]][0], colorTable[colorIndex[0]][1], colorTable[colorIndex[0]][2]);
         }
-        colors.push(colorTable[colorIndex[0]][0], colorTable[colorIndex[0]][1], colorTable[colorIndex[0]][2], colorTable[colorIndex[0]][0], colorTable[colorIndex[0]][1], colorTable[colorIndex[0]][2], colorTable[colorIndex[0]][0], colorTable[colorIndex[0]][1], colorTable[colorIndex[0]][2]);
     } else {
         let step = colorIndex[index[2]] - colorIndex[index[0]] + 1;
         let p02 = [];
@@ -438,20 +445,31 @@ function resizeCanvasToDisplaySize(canvas, multiplier) {
     return false;
 }
 
-function getRegion(mesh) {
-    let minX = [mesh.x[0][0], mesh.x[0][1], mesh.feType === "fe2d3" || mesh.feType === "fe2d4" ? 0.0 : mesh.x[0][2]];
-    let maxX = [mesh.x[0][0], mesh.x[0][1], mesh.feType === "fe2d3" || mesh.feType === "fe2d4" ? 0.0 : mesh.x[0][2]];
-    for (let i = 1; i < mesh.x.length; i++) {
-        for (let j = 0; j < mesh.x[i].length; j++) {
-            if (mesh.x[i][j] > maxX[j]) {
-                maxX[j] = mesh.x[i][j];
+function tX(i, j) {
+    if (renderParams.isTransformation) {
+        return renderParams.mesh.x[i][j] + renderParams.mesh.func[renderParams.transformParam.index[j]].results[i] *
+            renderParams.transformParam.ratio;
+    }
+    return renderParams.mesh.x[i][j];
+}
+
+function getRegion() {
+    let minX = [tX(0, 0), tX(0, 1), renderParams.mesh.feType === "fe2d3" ||
+        renderParams.mesh.feType === "fe2d4" ? 0.0 : tX(0, 2)];
+    let maxX = [tX(0, 0), tX(0, 1), renderParams.mesh.feType === "fe2d3" ||
+        renderParams.mesh.feType === "fe2d4" ? 0.0 : tX(0, 2)];
+    for (let i = 1; i < renderParams.mesh.x.length; i++) {
+        for (let j = 0; j < renderParams.mesh.x[i].length; j++) {
+            if (tX(i, j) > maxX[j]) {
+                maxX[j] = tX(i, j);
             }
-            if (mesh.x[i][j] < minX[j]) {
-                minX[j] = mesh.x[i][j];
+            if (tX(i, j) < minX[j]) {
+                minX[j] = tX(i, j);
             }
         }
     }
-    let radius = Math.sqrt(Math.pow(maxX[0] - minX[0], 2) + Math.pow(maxX[1] - minX[1], 2) + Math.pow(maxX[2] - minX[2], 2));
+    let radius = Math.sqrt(Math.pow(maxX[0] - minX[0], 2) + Math.pow(maxX[1] - minX[1], 2) +
+        Math.pow(maxX[2] - minX[2], 2));
     return {xc: [(maxX[0] + minX[0]) * 0.5, (maxX[1] + minX[1]) * 0.5, (maxX[2] + minX[2]) * 0.5], radius: radius};
 }
 
