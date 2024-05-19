@@ -168,10 +168,6 @@ class TransformationSceneBox extends React.Component {
     }
 
     render() {
-        let funcList = renderParams.mesh.func.map((v, i) => (
-            <option value={i}>{v.name}</option>
-        ));
-
         return (
             <fieldset className="transformationSceneBox">
                 <legend>Transformation scene</legend>
@@ -183,15 +179,6 @@ class TransformationSceneBox extends React.Component {
                         updateData={this.updateTranslateY}/>
                 <Slider min={0.5} max={5} step={0.5} value={this.state.scale} enabled={true} caption={"Scale:"}
                         updateData={this.updateScale}/>
-                <label>Transformation X:&nbsp;
-                    <select
-                        name="Function"
-                        size={1}
-                        onChange={this.updateFunction}>
-                        {funcList}
-                    </select>
-                </label>
-
             </fieldset>
         )
     }
