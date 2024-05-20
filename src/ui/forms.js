@@ -66,7 +66,7 @@ class ResultBox extends React.Component {
         this.setState({funIndex: event.target.value});
         renderParams.funIndex = event.target.value;
         renderImage();
-        this.props.updateData({funIndex: this.state.funIndex, isLegend: this.state.isLegend});
+        this.props.updateData({funIndex: event.target.value, isLegend: this.state.isLegend});
         //alert(event.target.value);
     }
     updateCheckbox = (event) => {
@@ -90,6 +90,7 @@ class ResultBox extends React.Component {
                     <select
                         name="Function"
                         size={1}
+                        value={this.props.funIndex}
                         //onChange={event => this.setState({funIndex: event.target.value})}>
                         onChange={this.updateFunction}>
                         {funcList}

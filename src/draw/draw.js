@@ -374,7 +374,8 @@ function setTriangle3d(tri, positions, normals, colors) {
         let step = colorIndex[index[2]] - colorIndex[index[0]] + 1;
         let p02 = [];
         let x = [tri[index[0]][0], tri[index[0]][1], tri[index[0]][2], colorIndex[index[0]]];
-        let h = [(tri[index[2]][0] - tri[index[0]][0]) / step, (tri[index[2]][1] - tri[index[0]][1]) / step, (tri[index[2]][2] - tri[index[0]][2]) / step, (colorIndex[index[2]] - colorIndex[index[0]]) / step];
+        let h = [(tri[index[2]][0] - tri[index[0]][0]) / step, (tri[index[2]][1] - tri[index[0]][1]) / step,
+            (tri[index[2]][2] - tri[index[0]][2]) / step, (colorIndex[index[2]] - colorIndex[index[0]]) / step];
         for (let i = 0; i < step; i++) {
             p02.push([x[0] + i * h[0], x[1] + i * h[1], x[2] + i * h[2], colorIndex[index[0]] + i * h[3]]);
         }
@@ -383,7 +384,8 @@ function setTriangle3d(tri, positions, normals, colors) {
         step = colorIndex[index[1]] - colorIndex[index[0]] + 1;
         let p012 = [];
         x = [tri[index[0]][0], tri[index[0]][1], tri[index[0]][2], colorIndex[index[0]]];
-        h = [(tri[index[1]][0] - tri[index[0]][0]) / step, (tri[index[1]][1] - tri[index[0]][1]) / step, (tri[index[1]][2] - tri[index[0]][2]) / step, (colorIndex[index[1]] - colorIndex[index[0]]) / step];
+        h = [(tri[index[1]][0] - tri[index[0]][0]) / step, (tri[index[1]][1] - tri[index[0]][1]) / step,
+            (tri[index[1]][2] - tri[index[0]][2]) / step, (colorIndex[index[1]] - colorIndex[index[0]]) / step];
         for (let i = 1; i < step; i++) {
             p012.push([x[0] + i * h[0], x[1] + i * h[1], x[2] + i * h[2], colorIndex[index[0]] + i * h[3]]);
         }
@@ -391,21 +393,29 @@ function setTriangle3d(tri, positions, normals, colors) {
 
         step = colorIndex[index[2]] - colorIndex[index[1]] + 1;
         x = [tri[index[1]][0], tri[index[1]][1], tri[index[1]][2], colorIndex[index[1]]];
-        h = [(tri[index[2]][0] - tri[index[1]][0]) / step, (tri[index[2]][1] - tri[index[1]][1]) / step, (tri[index[2]][2] - tri[index[1]][2]) / step, (colorIndex[index[2]] - colorIndex[index[1]]) / step];
+        h = [(tri[index[2]][0] - tri[index[1]][0]) / step, (tri[index[2]][1] - tri[index[1]][1]) / step,
+            (tri[index[2]][2] - tri[index[1]][2]) / step, (colorIndex[index[2]] - colorIndex[index[1]]) / step];
         for (let i = 1; i < step; i++) {
             p012.push([x[0] + i * h[0], x[1] + i * h[1], x[2] + i * h[2], colorIndex[index[1]] + i * h[3]]);
         }
         for (let i = 0; i < p02.length - 1; i++) {
             if (i < p012.length) {
                 let clr = Math.round(Math.min(p02[i][3], p02[i + 1][3], p012[i][3]));
-                colors.push(colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1], colorTable[clr][2]);
-                positions.push(p02[i][0], p02[i][1], p02[i][2], p012[i][0], p012[i][1], p012[i][2], p02[i + 1][0], p02[i + 1][1], p02[i + 1][2]);
-                normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0], normal[1], normal[2]);
+                colors.push(colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0],
+                    colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1], colorTable[clr][2]);
+                positions.push(p02[i][0], p02[i][1], p02[i][2], p012[i][0], p012[i][1], p012[i][2], p02[i + 1][0],
+                    p02[i + 1][1], p02[i + 1][2]);
+                normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0], normal[1],
+                    normal[2]);
                 if (i + 1 < p012.length) {
                     clr = Math.round(Math.min(p02[i + 1][3], p012[i][3], p012[i + 1][3]));
-                    colors.push(colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1], colorTable[clr][2]);
-                    positions.push(p02[i + 1][0], p02[i + 1][1], p02[i + 1][2], p012[i][0], p012[i][1], p012[i][2], p012[i + 1][0], p012[i + 1][1], p012[i + 1][2]);
-                    normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0], normal[1], normal[2]);
+                    colors.push(colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0],
+                        colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1],
+                        colorTable[clr][2]);
+                    positions.push(p02[i + 1][0], p02[i + 1][1], p02[i + 1][2], p012[i][0], p012[i][1], p012[i][2],
+                        p012[i + 1][0], p012[i + 1][1], p012[i + 1][2]);
+                    normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0], normal[1],
+                        normal[2]);
                 }
             }
         }
@@ -578,7 +588,7 @@ function renderScene(gl, ctx, programInfo, buffers, region) {
     }
 
     gl.uniform1i(programInfo.uniformLocations.isMeshLocation, 1);
-    gl.uniform4fv(programInfo.uniformLocations.colorLocation, [0.0, 0.0, 0.0, 1]); // black
+    gl.uniform4fv(programInfo.uniformLocations.colorLocation, [0.0, 0.0, 0.0, 1.0]); // black
 
     // Bind the position buffer.
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.mesh_position);
