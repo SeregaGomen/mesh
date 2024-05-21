@@ -189,9 +189,7 @@ class TransformationObjectBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            x_index: 0,
-            y_index: 1,
-            z_index: 2,
+            index: [0, 1, 2],
             ratio: 0.0,
         };
     }
@@ -203,9 +201,9 @@ class TransformationObjectBox extends React.Component {
                     <select
                         name="Function"
                         size={1}
-                        value={this.state.x_index}
+                        value={this.state.index[0]}
                         onChange={(event) => this.setState({
-                            x_index: event.target.value
+                            index: [event.target.value, this.state.index[1], this.state.index[2]]
                         })}>
                         {
                             renderParams.mesh.func.map((v, i) => (
@@ -216,10 +214,10 @@ class TransformationObjectBox extends React.Component {
                 <label>Transformation Y:&nbsp;
                     <select
                         name="Function"
-                        value={this.state.y_index}
+                        value={this.state.index[1]}
                         size={1}
                         onChange={(event) => this.setState({
-                            y_index: event.target.value
+                            index: [this.state.index[0], event.target.value, this.state.index[2]]
                         })}>
                         {
                             renderParams.mesh.func.map((v, i) => (
@@ -232,10 +230,10 @@ class TransformationObjectBox extends React.Component {
                         <label>Transformation Z:&nbsp;
                             <select
                                 name="Function"
-                                value={this.state.z_index}
+                                value={this.state.index[2]}
                                 size={1}
                                 onChange={(event) => this.setState({
-                                    z_index: event.target.value
+                                    index: [this.state.index[0], this.state.index[1], event.target.value]
                                 })}>
                                 {
                                     renderParams.mesh.func.map((v, i) => (
@@ -250,9 +248,7 @@ class TransformationObjectBox extends React.Component {
                             let value = Number(event);
                             this.setState({ratio: value});
                             renderParams.isTransformation = value !== 0;
-                            renderParams.transformParam.index[0] = this.state.x_index;
-                            renderParams.transformParam.index[1] = this.state.y_index;
-                            renderParams.transformParam.index[2] = this.state.z_index;
+                            renderParams.transformParam.index = this.state.index;
                             renderParams.transformParam.ratio = value;
                             renderImage();
                         }}/>
