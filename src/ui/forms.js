@@ -192,7 +192,7 @@ class TransformationObjectBox extends React.Component {
             x_index: 0,
             y_index: 1,
             z_index: 2,
-            ratio: 1.0E+4,
+            ratio: 0.0,
         };
     }
     render() {
@@ -244,31 +244,18 @@ class TransformationObjectBox extends React.Component {
                             </select>
                         </label> : null
                 }
-                <div>
-                    <input type="number" onChange={
-                        (event) => {
-                            this.setState({ratio: Number(event.target.value)})
-                        }
-                    }/>
-                </div>
-                <div>
-                    <button onClick={
-                        () => {
-                            renderParams.isTransformation = true;
+                <Slider min={0} max={0.5} step={0.1} value={this.state.ratio} enabled={true}
+                        caption={"Ratio:"}
+                        updateData={(event) => {
+                            let value = Number(event);
+                            this.setState({ratio: value});
+                            renderParams.isTransformation = value !== 0;
                             renderParams.transformParam.index[0] = this.state.x_index;
                             renderParams.transformParam.index[1] = this.state.y_index;
                             renderParams.transformParam.index[2] = this.state.z_index;
-                            renderParams.transformParam.ratio = this.state.ratio;
+                            renderParams.transformParam.ratio = value;
                             renderImage();
-                        }} type={"button"}>Apply
-                    </button>
-                    <button onClick={
-                        () => {
-                            renderParams.isTransformation = false;
-                            renderImage();
-                        }} type={"button"}>Restore
-                    </button>
-                </div>
+                        }}/>
             </fieldset>
         )
     }

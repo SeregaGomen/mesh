@@ -41,7 +41,7 @@ export let renderParams = {
     isTransformation: false,
     transformParam: {
         index: [0, 1, 2],
-        ratio: 0.1,
+        ratio: 0.0,
     }
 }
 
@@ -472,7 +472,7 @@ function resizeCanvasToDisplaySize(canvas, multiplier) {
 
 function tX(i, j) {
     if (renderParams.isTransformation) {
-        return renderParams.mesh.x[i][j] + 0.1 * radius *
+        return renderParams.mesh.x[i][j] + renderParams.transformParam.ratio * radius *
             (renderParams.mesh.func[renderParams.transformParam.index[j]].results[i] / maxTransformRatio);
     }
     return renderParams.mesh.x[i][j];
