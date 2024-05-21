@@ -41,7 +41,7 @@ export let renderParams = {
     isTransformation: false,
     transformParam: {
         index: [0, 1, 2],
-        ratio: 1.0,
+        ratio: 0.1,
     }
 }
 
@@ -50,6 +50,9 @@ let numSeg = 0;
 let minU = [0.0, 0.0];
 let maxU = [0.0, 0.0];
 let colorTable = [];
+let radius = 0.0;
+let xc = [0.0, 0.0, 0.0];
+let maxTransformRatio = 0.0
 let id;
 
 
@@ -157,10 +160,22 @@ export function renderImage() {
     minU = [0.0, 0.0];
     maxU = [0.0, 0.0];
 
-    let region = getRegion();
+    if (renderParams.isTransformation) {
+        maxTransformRatio = 0.0;
+        for (let k = 0; k < 3; k++) {
+            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU) > maxTransformRatio) {
+                maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU);
+            }
+            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU) > maxTransformRatio) {
+                maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU);
+            }
+        }
+    }
+
+    getRegion();
     setColorTable();
     // Create a buffers to put positions in
-    let buffers = createBuffers(gl, region.radius);
+    let buffers = createBuffers(gl, radius);
 
     if (renderParams.funIndex !== null) {
         createLegend();
@@ -175,7 +190,7 @@ export function renderImage() {
         let deltaTime = 0.017; // now - then;
         //then = now;
 
-        renderScene(gl, ctx,  programInfo, buffers, region);
+        renderScene(gl, ctx,  programInfo, buffers);
 
         if (renderParams.isRotation === true) {
             renderParams.rotationX += deltaTime;
@@ -457,11 +472,12 @@ function resizeCanvasToDisplaySize(canvas, multiplier) {
 
 function tX(i, j) {
     if (renderParams.isTransformation) {
-        return renderParams.mesh.x[i][j] + renderParams.mesh.func[renderParams.transformParam.index[j]].results[i] *
-            renderParams.transformParam.ratio;
+        return renderParams.mesh.x[i][j] + 0.1 * radius *
+            (renderParams.mesh.func[renderParams.transformParam.index[j]].results[i] / maxTransformRatio);
     }
     return renderParams.mesh.x[i][j];
 }
+
 
 function getRegion() {
     let minX = [tX(0, 0), tX(0, 1), renderParams.mesh.feType === "fe2d3" ||
@@ -478,13 +494,13 @@ function getRegion() {
             }
         }
     }
-    let radius = Math.sqrt(Math.pow(maxX[0] - minX[0], 2) + Math.pow(maxX[1] - minX[1], 2) +
+    radius = Math.sqrt(Math.pow(maxX[0] - minX[0], 2) + Math.pow(maxX[1] - minX[1], 2) +
         Math.pow(maxX[2] - minX[2], 2));
-    return {xc: [(maxX[0] + minX[0]) * 0.5, (maxX[1] + minX[1]) * 0.5, (maxX[2] + minX[2]) * 0.5], radius: radius};
+    xc = [(maxX[0] + minX[0]) * 0.5, (maxX[1] + minX[1]) * 0.5, (maxX[2] + minX[2]) * 0.5];
 }
 
 // Draw the scene
-function renderScene(gl, ctx, programInfo, buffers, region) {
+function renderScene(gl, ctx, programInfo, buffers) {
     resizeCanvasToDisplaySize(gl.canvas);
     resizeCanvasToDisplaySize(ctx.canvas);
 
@@ -532,15 +548,15 @@ function renderScene(gl, ctx, programInfo, buffers, region) {
 
     // Compute the projection matrix
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    let zNear = 0.1 * region.radius;
-    let zFar = 100 * region.radius;
+    let zNear = 0.1 * radius;
+    let zFar = 100 * radius;
     let projectionMatrix = perspective(degToRad(60), aspect, zNear, zFar);
 
 
     // Compute the camera's matrix
-    let camera = [region.radius, region.radius, region.radius];
+    let camera = [radius, radius, radius];
     let target = [0, 0, 0];
-    let up = [0, 0, region.radius];
+    let up = [0, 0, radius];
     let cameraMatrix = lookAt(camera, target, up);
 
 
@@ -567,10 +583,10 @@ function renderScene(gl, ctx, programInfo, buffers, region) {
         worldViewProjectionMatrix);
     gl.uniformMatrix4fv(programInfo.uniformLocations.worldInverseTransposeLocation, false,
         worldInverseTransposeMatrix);
-    gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, region.xc[0], region.xc[1], region.xc[2], 0.0);
-    gl.uniform4f(programInfo.uniformLocations.worldTranslation, renderParams.translateX * region.radius,
-        renderParams.translateY * region.radius,
-        renderParams.translateZ * region.radius, 0.0);
+    gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, xc[0], xc[1], xc[2], 0.0);
+    gl.uniform4f(programInfo.uniformLocations.worldTranslation, renderParams.translateX * radius,
+        renderParams.translateY * radius,
+        renderParams.translateZ * radius, 0.0);
     gl.uniform4f(programInfo.uniformLocations.worldScale, renderParams.scale, renderParams.scale, renderParams.scale, 1.0);
 
     // Set the color to use
@@ -604,7 +620,7 @@ function renderScene(gl, ctx, programInfo, buffers, region) {
     // Draw the coordinate axes
     if (renderParams.isAxes) {
         gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, 0.0, 0.0, 0.0, 0.0);
-        gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * region.radius,region.radius,0.0, 0.0);
+        gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * radius, radius,0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldScale, 1.0, 1.0, 1.0, 1.0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.axes_position);
@@ -615,7 +631,7 @@ function renderScene(gl, ctx, programInfo, buffers, region) {
         gl.drawArrays(gl.LINES, 0, 6);
         gl.enable(gl.DEPTH_TEST);
     }
-    drawAxesLabel(gl, ctx, worldViewProjectionMatrix, region.radius);
+    drawAxesLabel(gl, ctx, worldViewProjectionMatrix, radius);
 
     if (renderParams.isLegend && renderParams.funIndex !== null) {
         showLegend(ctx);

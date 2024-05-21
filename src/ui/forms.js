@@ -203,6 +203,7 @@ class TransformationObjectBox extends React.Component {
                     <select
                         name="Function"
                         size={1}
+                        value={this.state.x_index}
                         onChange={(event) => this.setState({
                             x_index: event.target.value
                         })}>
@@ -215,6 +216,7 @@ class TransformationObjectBox extends React.Component {
                 <label>Transformation Y:&nbsp;
                     <select
                         name="Function"
+                        value={this.state.y_index}
                         size={1}
                         onChange={(event) => this.setState({
                             y_index: event.target.value
@@ -225,19 +227,23 @@ class TransformationObjectBox extends React.Component {
                         }
                     </select>
                 </label>
-                <label>Transformation Z:&nbsp;
-                    <select
-                        name="Function"
-                        size={1}
-                        onChange={(event) => this.setState({
-                            z_index: event.target.value
-                        })}>
-                        {
-                            renderParams.mesh.func.map((v, i) => (
-                                <option value={i} selected={i===2}>{v.name}</option>))
-                        }
-                    </select>
-                </label>
+                {
+                    renderParams.mesh.feType.indexOf("fe2d") === -1 ?
+                        <label>Transformation Z:&nbsp;
+                            <select
+                                name="Function"
+                                value={this.state.z_index}
+                                size={1}
+                                onChange={(event) => this.setState({
+                                    z_index: event.target.value
+                                })}>
+                                {
+                                    renderParams.mesh.func.map((v, i) => (
+                                        <option value={i} selected={i === 2}>{v.name}</option>))
+                                }
+                            </select>
+                        </label> : null
+                }
                 <div>
                     <input type="number" onChange={
                         (event) => {
