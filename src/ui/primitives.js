@@ -1,5 +1,4 @@
 import React from "react";
-import {renderImage} from "../draw/draw";
 import {loadFile} from "../file/file";
 
 export class Canvas extends React.Component {
