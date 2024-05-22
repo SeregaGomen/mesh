@@ -15,9 +15,6 @@ export class Canvas extends React.Component {
 export class LoadButton extends React.Component {
     updateFile = (value) => {
         this.props.updateData(value);
-        if (value.isFileOpened === true) {
-            renderImage();
-        }
     }
     render() {
         return (

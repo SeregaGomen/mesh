@@ -271,6 +271,9 @@ export class Forms extends React.Component {
     updateFile = (value) => {
         this.setState({isFileOpened: value.isFileOpened});
         this.setState({funIndex: value.funIndex});
+        if (value.isFileOpened === true) {
+            renderImage();
+        }
     }
     updateResult = (value) => {
         this.setState({funIndex: value.funIndex});
