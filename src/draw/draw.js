@@ -589,9 +589,9 @@ function renderScene(gl, ctx, programInfo, buffers) {
         worldInverseTransposeMatrix);
     gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, renderData.xc[0], renderData.xc[1],
         renderData.xc[2], 0.0);
-    gl.uniform4f(programInfo.uniformLocations.worldTranslation, renderParams.translate[0] * renderData.radius,
-        renderParams.translate[1] * renderData.radius,
-        renderParams.translate[2] * renderData.radius, 0.0);
+    gl.uniform4f(programInfo.uniformLocations.worldTranslation, -renderParams.translate[0] * renderData.radius,
+        -renderParams.translate[1] * renderData.radius,
+        -renderParams.translate[2] * renderData.radius, 0.0);
     gl.uniform4f(programInfo.uniformLocations.worldScale, renderParams.scale, renderParams.scale, renderParams.scale, 1.0);
 
     // Set the color to use
