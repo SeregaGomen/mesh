@@ -14,11 +14,23 @@ class RotateBox extends React.Component {
                     <CheckBox isChecked={this.props.isAutoRotation} caption={"Auto-rotation"}
                               updateData={this.props.updateIsAutoRotation}/>
                     <Slider min={0} max={360} step={1} value={this.props.rotation[0]} caption={"X:"}
-                            enabled={!this.props.isAutoRotation} updateData={this.props.updateRotationX}/>
+                            enabled={!this.props.isAutoRotation} updateData={
+                        (value) => {
+                            this.props.updateRotation([value, this.props.rotation[1], this.props.rotation[2]])
+                        }
+                    }/>
                     <Slider min={0} max={360} step={1} value={this.props.rotation[1]} caption={"Y:"}
-                            enabled={!this.props.isAutoRotation} updateData={this.props.updateRotationY}/>
+                            enabled={!this.props.isAutoRotation} updateData={
+                        (value) => {
+                            this.props.updateRotation([this.props.rotation[0], value, this.props.rotation[2]])
+                        }
+                    }/>
                     <Slider min={0} max={360} step={1} value={this.props.rotation[2]} caption={"Z:"}
-                            enabled={!this.props.isAutoRotation} updateData={this.props.updateRotationZ}/>
+                            enabled={!this.props.isAutoRotation} updateData={
+                        (value) => {
+                            this.props.updateRotation([this.props.rotation[0], this.props.rotation[1], value])
+                        }
+                    }/>
                 </fieldset>
             : null
         )
@@ -93,10 +105,10 @@ class VisualizationBox extends React.Component {
 
 class TransformationSceneBox extends React.Component {
     updateTranslateX = (event) => {
-        this.props.updateTranslateX(Number(event))
+        this.props.updateTranslate([Number(event), this.props.translate[1], this.props.translate[2]])
     }
     updateTranslateY = (event) => {
-        this.props.updateTranslateY(Number(event))
+        this.props.updateTranslate([this.props.translate[0], Number(event), this.props.translate[2]])
     }
     render() {
         return (
@@ -252,17 +264,9 @@ export class Forms extends React.Component {
         renderParams.isLegend = value.isLegend;
         //renderImage();
     }
-    updateRotationX = (value) => {
-        this.setState({rotation: [value, this.state.rotation[1], this.state.rotation[2]]});
-        renderParams.rotation[0] = value;
-    }
-    updateRotationY = (value) => {
-        this.setState({rotation: [this.state.rotation[0], value, this.state.rotation[2]]});
-        renderParams.rotation[1] = value;
-    }
-    updateRotationZ = (value) => {
-        this.setState({rotation: [this.state.rotation[0], this.state.rotation[1], value]});
-        renderParams.rotation[2] = value;
+    updateRotation = (value) => {
+        this.setState({rotation: value});
+        renderParams.rotation = value;
     }
     updateIsAutoRotation = (value) => {
         this.setState({isAutoRotation: value});
@@ -301,13 +305,9 @@ export class Forms extends React.Component {
         this.setState({scale: value});
         renderParams.scale = value;
     }
-    updateTranslateX = (value) => {
-        this.setState({translate: [value, this.state.translate[1], this.state.translate[2]]});
-        renderParams.translate[0] = value;
-    }
-    updateTranslateY = (value) => {
-        this.setState({translate: [this.state.translate[0], value, this.state.translate[2]]});
-        renderParams.translate[1] = value;
+    updateTranslate = (value) => {
+        this.setState({translate: value});
+        renderParams.translate = value;
     }
 
     render() {
@@ -323,16 +323,14 @@ export class Forms extends React.Component {
                                    updateFunIndex={this.updateFunIndex} updateNumColors={this.updateNumColors}
                                    updateIsLegend={this.updateIsLegend}/>
                         <RotateBox rotation={this.state.rotation} isAutoRotation={this.state.isAutoRotation}
-                                   updateRotationX={this.updateRotationX} updateRotationY={this.updateRotationY}
-                                   updateRotationZ={this.updateRotationZ}
-                                   updateIsAutoRotation={this.updateIsAutoRotation} mesh={this.state.mesh}/>
+                                   updateRotation={this.updateRotation} updateIsAutoRotation={this.updateIsAutoRotation}
+                                   mesh={this.state.mesh}/>
                         <VisualizationBox mesh={this.state.mesh} isAxes={this.state.isAxes} isMesh={this.state.isMesh}
                                           isSurface={this.state.isSurface} updateIsAxes={this.updateIsAxes}
                                           updateRadio={this.updateRadio}/>
                         <TransformationSceneBox mesh={this.state.mesh} translate={this.state.translate}
                                                 scale={this.state.scale} updateScale={this.updateScale}
-                                                updateTranslateX={this.updateTranslateX}
-                                                updateTranslateY={this.updateTranslateY}/>
+                                                updateTranslate={this.updateTranslate}/>
                         <TransformationObjectBox funIndex={this.state.funIndex} mesh={this.state.mesh}/>
                     </div>
                 </div>
