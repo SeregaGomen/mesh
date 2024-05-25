@@ -19,21 +19,13 @@ import {
 
 
 export let renderParams = {
-    isRotation: true,
+    isAutoRotation: true,
     numColors: 32,
-    rotationX: 0.0,
-    rotationY: 0.0,
-    rotationZ: 0.0,
-    translateX: 0.0,
-    translateY: 0.0,
-    translateZ: 0.0,
+    rotation: [0.0, 0.0, 0.0],
+    translate: [0.0, 0.0, 0.0],
     scale: 1.0,
     mesh: null,
-    legend: {
-        color: [7],
-        value: [7],
-    },
-    funIndex: null,
+    funIndex: 0,
     isMesh: true,
     isSurface: true,
     isAxes: true,
@@ -45,15 +37,21 @@ export let renderParams = {
     }
 }
 
-let numTri = 0;
-let numSeg = 0;
-let minU = [0.0, 0.0];
-let maxU = [0.0, 0.0];
-let colorTable = [];
-let radius = 0.0;
-let xc = [0.0, 0.0, 0.0];
-let maxTransformRatio = 0.0
-let id;
+let renderData = {
+    numTri: 0,
+    numSeg: 0,
+    minU: [0.0, 0.0],
+    maxU: [0.0, 0.0],
+    colorTable: [],
+    radius: 0.0,
+    xc: [0.0, 0.0, 0.0],
+    maxTransformRatio: 0.0,
+    id: null,
+    legend: {
+        color: [7],
+        value: [7],
+    },
+}
 
 
 // Vertex shader
@@ -156,18 +154,18 @@ export function renderImage() {
         },
     };
 
-    cancelAnimationFrame(id);
-    minU = [0.0, 0.0];
-    maxU = [0.0, 0.0];
+    cancelAnimationFrame(renderData.id);
+    renderData.minU = [0.0, 0.0];
+    renderData.maxU = [0.0, 0.0];
 
     if (renderParams.isTransformation) {
-        maxTransformRatio = 0.0;
+        renderData.maxTransformRatio = 0.0;
         for (let k = 0; k < 3; k++) {
-            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU) > maxTransformRatio) {
-                maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU);
+            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU) > renderData.maxTransformRatio) {
+                renderData.maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU);
             }
-            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU) > maxTransformRatio) {
-                maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU);
+            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU) > renderData.maxTransformRatio) {
+                renderData.maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU);
             }
         }
     }
@@ -175,9 +173,9 @@ export function renderImage() {
     getRegion();
     setColorTable();
     // Create a buffers to put positions in
-    let buffers = createBuffers(gl, radius);
+    let buffers = createBuffers(gl, renderData.radius);
 
-    if (renderParams.funIndex !== null) {
+    if (renderParams.mesh.func.length) {
         createLegend();
     }
 
@@ -192,32 +190,33 @@ export function renderImage() {
 
         renderScene(gl, ctx,  programInfo, buffers);
 
-        if (renderParams.isRotation === true) {
-            renderParams.rotationX += deltaTime;
-            renderParams.rotationY += 0.7 * deltaTime;
-            renderParams.rotationZ += 0.3 * deltaTime;
+        if (renderParams.isAutoRotation === true) {
+            renderParams.rotation[0] += deltaTime;
+            renderParams.rotation[1] += 0.7 * deltaTime;
+            renderParams.rotation[2] += 0.3 * deltaTime;
         }
 
-        id = requestAnimationFrame(render);
+        renderData.id = requestAnimationFrame(render);
     }
-    id = requestAnimationFrame(render);
+    renderData.id = requestAnimationFrame(render);
 }
 
 
 function createLegend() {
     if (renderParams.mesh.func.length !== 0) {
-        let h = (maxU[0] - minU[0]) / 7.0;
-        let start = getColorIndex(maxU[0]);
-        let stop = getColorIndex(minU[0]);
+        let h = (renderData.maxU[0] - renderData.minU[0]) / 7.0;
+        let start = getColorIndex(renderData.maxU[0]);
+        let stop = getColorIndex(renderData.minU[0]);
         let step = (start - stop) / 6.0;
 
         for (let i = 0; i < 7; i++) {
             let index = i !== 6 ? Math.round(start - i * step) : stop;
-            renderParams.legend.color[i] = "rgb(" + 255 * colorTable[index][0] + ", " + 255 * colorTable[index][1] + ", " + 255 * colorTable[index][2] + ")";
-            renderParams.legend.value[i] = ((x, f) => {
+            renderData.legend.color[i] = "rgb(" + 255 * renderData.colorTable[index][0] + ", " +
+                255 * renderData.colorTable[index][1] + ", " + 255 * renderData.colorTable[index][2] + ")";
+            renderData.legend.value[i] = ((x, f) => {
                 let value = x.toExponential(f);
                 return value >= 0 ? "+" + value : value;
-            })(i === 6 ? minU[0] : maxU[0] - i * h, 5);
+            })(i === 6 ? renderData.minU[0] : renderData.maxU[0] - i * h, 5);
         }
     }
 }
@@ -227,10 +226,10 @@ function showLegend(ctx) {
     let left = 10;
     for (let i = 0; i < 7; i++) {
         ctx.font = "14px monospace";
-        ctx.fillStyle = renderParams.legend.color[i];
+        ctx.fillStyle = renderData.legend.color[i];
         ctx.fillText("█", left,  top + i * 20);
         ctx.fillStyle = "black";
-        ctx.fillText(String(renderParams.legend.value[i]), left + ctx.measureText("12").width,  top + i * 20);
+        ctx.fillText(String(renderData.legend.value[i]), left + ctx.measureText("12").width,  top + i * 20);
 
     }
 }
@@ -281,10 +280,11 @@ function createBuffers(gl, radius) {
 
 function getColorIndex(u) {
     let ret = 0;
-    if (minU[1] !== maxU[1]) {
-        ret = Math.floor((u - minU[1]) / ((maxU[1] - minU[1]) / renderParams.numColors)) - 1;
+    if (renderData.minU[1] !== renderData.maxU[1]) {
+        ret = Math.floor((u - renderData.minU[1]) / ((renderData.maxU[1] - renderData.minU[1]) /
+            renderParams.numColors)) - 1;
     }
-    return ret < 0 ? 0 : ret >= colorTable.length ? colorTable.length - 1 : ret;
+    return ret < 0 ? 0 : ret >= renderData.colorTable.length ? renderData.colorTable.length - 1 : ret;
 }
 
 function getGeometry() {
@@ -322,8 +322,8 @@ function getGeometry() {
         mesh_positions.push(tX(elm[i][0], 0), tX(elm[i][0], 1),
             renderParams.mesh.feType.indexOf("fe2d") === -1 ? tX(elm[i][0], 2) : 0.0);
     }
-    numTri = positions.length / 3;
-    numSeg = mesh_positions.length / 3;
+    renderData.numTri = positions.length / 3;
+    renderData.numSeg = mesh_positions.length / 3;
     return {surface_positions: positions, mesh_positions: mesh_positions, normals: normals, colors: colors}
 }
 
@@ -335,34 +335,35 @@ function setColorTable() {
     //let red = 0.24;
     let red = 1.0;
 
-    if (renderParams.funIndex !== null) {
-        minU[0] = renderParams.mesh.func[renderParams.funIndex].minU;
-        maxU[0] = renderParams.mesh.func[renderParams.funIndex].maxU;
-        minU[1] = Math.abs(minU[0]) > Math.abs(maxU[0]) ? -Math.abs(minU[0]) : -Math.abs(maxU[0]);
-        maxU[1] = Math.abs(minU[1]);
+    if (renderParams.mesh.func.length) {
+        renderData.minU[0] = renderParams.mesh.func[renderParams.funIndex].minU;
+        renderData.maxU[0] = renderParams.mesh.func[renderParams.funIndex].maxU;
+        renderData.minU[1] = Math.abs(renderData.minU[0]) > Math.abs(renderData.maxU[0]) ?
+            -Math.abs(renderData.minU[0]) : -Math.abs(renderData.maxU[0]);
+        renderData.maxU[1] = Math.abs(renderData.minU[1]);
     }
 
-    colorTable = [];
+    renderData.colorTable = [];
     for (let i = 0; i < renderParams.numColors; i++) {
         if (i < step) {
             // purple - dark blue
-            colorTable.push([red, 0.0, 1.0]);
+            renderData.colorTable.push([red, 0.0, 1.0]);
             red = red < 0.0 ? 0.0 : red - h;
         } else if (step <= i && i < 2 * step) {
             // dark blue-blue
-            colorTable.push([0.0, green, 1.0]);
+            renderData.colorTable.push([0.0, green, 1.0]);
             green = green > 1.0 ? 1.0 : green + h;
         } else if (2 * step <= i && i < 3 * step) {
             // blue-green
-            colorTable.push([0.0, 1.0, blue]);
+            renderData.colorTable.push([0.0, 1.0, blue]);
             blue = blue < 0.0 ? 0.0 : blue - h;
         } else if (3 * step <= i && i < 4 * step) {
             // green-yellow
-            colorTable.push([red, 1.0, 0.0]);
+            renderData.colorTable.push([red, 1.0, 0.0]);
             red = red > 1.0 ? 1.0 : red + h;
         } else if (i > 4 * step) {
             // yellow-orange-red
-            colorTable.push([1.0, green, 0.0])
+            renderData.colorTable.push([1.0, green, 0.0])
             green = green < 0.0 ? 0.0 : green - 0.5 * h;
         }
     }
@@ -383,7 +384,8 @@ function setTriangle3d(tri, positions, normals, colors) {
         for (let i = 0; i < 3; i++) {
             positions.push(tri[index[i]][0], tri[index[i]][1], tri[index[i]][2]);
             normals.push(normal[0], normal[1], normal[2]);
-            colors.push(colorTable[colorIndex[0]][0], colorTable[colorIndex[0]][1], colorTable[colorIndex[0]][2]);
+            colors.push(renderData.colorTable[colorIndex[0]][0], renderData.colorTable[colorIndex[0]][1],
+                renderData.colorTable[colorIndex[0]][2]);
         }
     } else {
         let step = colorIndex[index[2]] - colorIndex[index[0]] + 1;
@@ -416,17 +418,19 @@ function setTriangle3d(tri, positions, normals, colors) {
         for (let i = 0; i < p02.length - 1; i++) {
             if (i < p012.length) {
                 let clr = Math.round(Math.min(p02[i][3], p02[i + 1][3], p012[i][3]));
-                colors.push(colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0],
-                    colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1], colorTable[clr][2]);
+                colors.push(renderData.colorTable[clr][0], renderData.colorTable[clr][1], renderData.colorTable[clr][2],
+                    renderData.colorTable[clr][0], renderData.colorTable[clr][1], renderData.colorTable[clr][2],
+                    renderData.colorTable[clr][0], renderData.colorTable[clr][1], renderData.colorTable[clr][2]);
                 positions.push(p02[i][0], p02[i][1], p02[i][2], p012[i][0], p012[i][1], p012[i][2], p02[i + 1][0],
                     p02[i + 1][1], p02[i + 1][2]);
                 normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0], normal[1],
                     normal[2]);
                 if (i + 1 < p012.length) {
                     clr = Math.round(Math.min(p02[i + 1][3], p012[i][3], p012[i + 1][3]));
-                    colors.push(colorTable[clr][0], colorTable[clr][1], colorTable[clr][2], colorTable[clr][0],
-                        colorTable[clr][1], colorTable[clr][2], colorTable[clr][0], colorTable[clr][1],
-                        colorTable[clr][2]);
+                    colors.push(renderData.colorTable[clr][0], renderData.colorTable[clr][1],
+                        renderData.colorTable[clr][2], renderData.colorTable[clr][0],
+                        renderData.colorTable[clr][1], renderData.colorTable[clr][2], renderData.colorTable[clr][0],
+                        renderData.colorTable[clr][1], renderData.colorTable[clr][2]);
                     positions.push(p02[i + 1][0], p02[i + 1][1], p02[i + 1][2], p012[i][0], p012[i][1], p012[i][2],
                         p012[i + 1][0], p012[i + 1][1], p012[i + 1][2]);
                     normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0], normal[1],
@@ -472,8 +476,8 @@ function resizeCanvasToDisplaySize(canvas, multiplier) {
 
 function tX(i, j) {
     if (renderParams.isTransformation) {
-        return renderParams.mesh.x[i][j] + renderParams.transformParam.ratio * radius *
-            (renderParams.mesh.func[renderParams.transformParam.index[j]].results[i] / maxTransformRatio);
+        return renderParams.mesh.x[i][j] + renderParams.transformParam.ratio * renderData.radius *
+            (renderParams.mesh.func[renderParams.transformParam.index[j]].results[i] / renderData.maxTransformRatio);
     }
     return renderParams.mesh.x[i][j];
 }
@@ -494,9 +498,9 @@ function getRegion() {
             }
         }
     }
-    radius = Math.sqrt(Math.pow(maxX[0] - minX[0], 2) + Math.pow(maxX[1] - minX[1], 2) +
+    renderData.radius = Math.sqrt(Math.pow(maxX[0] - minX[0], 2) + Math.pow(maxX[1] - minX[1], 2) +
         Math.pow(maxX[2] - minX[2], 2));
-    xc = [(maxX[0] + minX[0]) * 0.5, (maxX[1] + minX[1]) * 0.5, (maxX[2] + minX[2]) * 0.5];
+    renderData.xc = [(maxX[0] + minX[0]) * 0.5, (maxX[1] + minX[1]) * 0.5, (maxX[2] + minX[2]) * 0.5];
 }
 
 // Draw the scene
@@ -548,15 +552,15 @@ function renderScene(gl, ctx, programInfo, buffers) {
 
     // Compute the projection matrix
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    let zNear = 0.1 * radius;
-    let zFar = 100 * radius;
+    let zNear = 0.1 * renderData.radius;
+    let zFar = 100 * renderData.radius;
     let projectionMatrix = perspective(degToRad(60), aspect, zNear, zFar);
 
 
     // Compute the camera's matrix
-    let camera = [radius, radius, radius];
+    let camera = [renderData.radius, renderData.radius, renderData.radius];
     let target = [0, 0, 0];
-    let up = [0, 0, radius];
+    let up = [0, 0, renderData.radius];
     let cameraMatrix = lookAt(camera, target, up);
 
 
@@ -567,10 +571,10 @@ function renderScene(gl, ctx, programInfo, buffers) {
     let viewProjectionMatrix = multiply(projectionMatrix, viewMatrix);
 
     // Draw F at the origin
-    let worldMatrix = xRotation(renderParams.rotationX);
+    let worldMatrix = xRotation(renderParams.rotation[0]);
 
-    yRotate(worldMatrix, renderParams.rotationY, worldMatrix);
-    zRotate(worldMatrix, renderParams.rotationZ, worldMatrix);
+    yRotate(worldMatrix, renderParams.rotation[1], worldMatrix);
+    zRotate(worldMatrix, renderParams.rotation[2], worldMatrix);
 
     // Multiply the matrices.
     let worldViewProjectionMatrix = multiply(viewProjectionMatrix, worldMatrix);
@@ -583,10 +587,11 @@ function renderScene(gl, ctx, programInfo, buffers) {
         worldViewProjectionMatrix);
     gl.uniformMatrix4fv(programInfo.uniformLocations.worldInverseTransposeLocation, false,
         worldInverseTransposeMatrix);
-    gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, xc[0], xc[1], xc[2], 0.0);
-    gl.uniform4f(programInfo.uniformLocations.worldTranslation, renderParams.translateX * radius,
-        renderParams.translateY * radius,
-        renderParams.translateZ * radius, 0.0);
+    gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, renderData.xc[0], renderData.xc[1],
+        renderData.xc[2], 0.0);
+    gl.uniform4f(programInfo.uniformLocations.worldTranslation, renderParams.translate[0] * renderData.radius,
+        renderParams.translate[1] * renderData.radius,
+        renderParams.translate[2] * renderData.radius, 0.0);
     gl.uniform4f(programInfo.uniformLocations.worldScale, renderParams.scale, renderParams.scale, renderParams.scale, 1.0);
 
     // Set the color to use
@@ -600,7 +605,7 @@ function renderScene(gl, ctx, programInfo, buffers) {
 
     // Draw the geometry.
     if (renderParams.isSurface) {
-        gl.drawArrays(gl.TRIANGLES, 0, numTri);
+        gl.drawArrays(gl.TRIANGLES, 0, renderData.numTri);
     }
 
     gl.uniform1i(programInfo.uniformLocations.isMeshLocation, 1);
@@ -613,14 +618,15 @@ function renderScene(gl, ctx, programInfo, buffers) {
     gl.vertexAttribPointer(programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
     // Draw the mesh
     if (renderParams.isMesh) {
-        gl.drawArrays(gl.LINES, offset, numSeg);
+        gl.drawArrays(gl.LINES, offset, renderData.numSeg);
     }
 
 
     // Draw the coordinate axes
     if (renderParams.isAxes) {
         gl.uniform4f(programInfo.uniformLocations.worldTranslationCenter, 0.0, 0.0, 0.0, 0.0);
-        gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * radius, radius,0.0, 0.0);
+        gl.uniform4f(programInfo.uniformLocations.worldTranslation, 1.5 * renderData.radius, renderData.radius,
+            0.0, 0.0);
         gl.uniform4f(programInfo.uniformLocations.worldScale, 1.0, 1.0, 1.0, 1.0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.axes_position);
@@ -631,9 +637,9 @@ function renderScene(gl, ctx, programInfo, buffers) {
         gl.drawArrays(gl.LINES, 0, 6);
         gl.enable(gl.DEPTH_TEST);
     }
-    drawAxesLabel(gl, ctx, worldViewProjectionMatrix, radius);
+    drawAxesLabel(gl, ctx, worldViewProjectionMatrix, renderData.radius);
 
-    if (renderParams.isLegend && renderParams.funIndex !== null) {
+    if (renderParams.isLegend && renderParams.mesh.func.length) {
         showLegend(ctx);
     }
 }

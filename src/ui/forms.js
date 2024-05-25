@@ -1,186 +1,118 @@
 import React from "react";
 import {renderImage, renderParams} from '../draw/draw';
-import {degToRad, radToDeg} from '../utils/utils';
+import {radToDeg} from '../utils/utils';
 import {Canvas, CheckBox, Slider, LoadButton, RadioBox} from './primitives';
 
 
 // https://medium.com/@jmuse/передача-данных-между-компонентами-в-react-d86394da2b50
 class RotateBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isAutoRotation: this.props.isAutoRotation,
-            angleX: props.angleX,
-            angleY: props.angleY,
-            angleZ: props.angleZ,
-            sliderEnabled: props.sliderEnabled,
-        };
-    }
-    updateCheckBox = (value) => {
-        this.setState({isAutoRotation: value});
-        renderParams.isRotation = !renderParams.isRotation;
-        if (renderParams.isRotation === false) {
-            this.setState({angleX: Math.round(radToDeg(renderParams.rotationX)) % 360});
-            this.setState({angleY: Math.round(radToDeg(renderParams.rotationY)) % 360});
-            this.setState({angleZ: Math.round(radToDeg(renderParams.rotationZ)) % 360});
-            //console.log(this.state.angleX);
-        }
-        this.setState({sliderEnabled: value});
-    }
-    updateSliderX = (value) => {
-        this.setState({angleX: value});
-        renderParams.rotationX = degToRad(value);
-        //console.log('***', renderParams.rotationX, renderParams.rotationY, renderParams.rotationZ, '***');
-    }
-    updateSliderY = (value) => {
-        this.setState({angleY: value});
-        renderParams.rotationY = degToRad(value);
-    }
-    updateSliderZ = (value) => {
-        this.setState({angleZ: value});
-        renderParams.rotationZ = degToRad(value);
-    }
     render() {
         return (
-            <fieldset className="rotationBox">
-                <legend>Rotation</legend>
-                <CheckBox isChecked={this.state.isAutoRotation} caption={"Auto-rotation"} updateData={this.updateCheckBox}/>
-                <Slider min={0} max={360} step={1} value={this.state.angleX} caption={"X:"} enabled={this.state.sliderEnabled} updateData={this.updateSliderX}/>
-                <Slider min={0} max={360} step={1} value={this.state.angleY} caption={"Y:"} enabled={this.state.sliderEnabled} updateData={this.updateSliderY}/>
-                <Slider min={0} max={360} step={1} value={this.state.angleZ} caption={"Z:"} enabled={this.state.sliderEnabled} updateData={this.updateSliderZ}/>
-            </fieldset>
+            this.props.mesh ?
+                <fieldset className="rotationBox">
+                    <legend>Rotation</legend>
+                    <CheckBox isChecked={this.props.isAutoRotation} caption={"Auto-rotation"}
+                              updateData={this.props.updateIsAutoRotation}/>
+                    <Slider min={0} max={360} step={1} value={this.props.rotation[0]} caption={"X:"}
+                            enabled={!this.props.isAutoRotation} updateData={this.props.updateRotationX}/>
+                    <Slider min={0} max={360} step={1} value={this.props.rotation[1]} caption={"Y:"}
+                            enabled={!this.props.isAutoRotation} updateData={this.props.updateRotationY}/>
+                    <Slider min={0} max={360} step={1} value={this.props.rotation[2]} caption={"Z:"}
+                            enabled={!this.props.isAutoRotation} updateData={this.props.updateRotationZ}/>
+                </fieldset>
+            : null
         )
     }
 }
 
 class ResultBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            funIndex: this.props.funIndex,
-            isLegend: true,
-            numColors: 32,
-        };
-    }
     updateFunction = (event) => {
-        this.setState({funIndex: event.target.value});
-        renderParams.funIndex = event.target.value;
-        renderImage();
-        this.props.updateData({funIndex: event.target.value, isLegend: this.state.isLegend});
-        //alert(event.target.value);
+        this.props.updateFunIndex({funIndex: Number(event.target.value)});
     }
     updateCheckbox = (event) => {
-        this.setState({isLegend: !event});
-        this.props.updateData({funIndex: this.state.funIndex, isLegend: !event});
-        renderParams.isLegend = !event;
+        this.props.updateIsLegend({isLegend: event});
     }
     updateNumColors = (event) => {
-        this.setState({numColors: event});
-        renderParams.numColors = event;
-        renderImage();
+        this.props.updateNumColors({numColors: Number(event)});
     }
     render() {
-        let funcList = renderParams.mesh.func.map((v, i) => (
-            <option value={i}>{v.name}</option>
-        ));
         return (
-            <fieldset className="resultBox">
-                <legend>Result</legend>
-                <label>Function:&nbsp;
-                    <select
-                        name="Function"
-                        size={1}
-                        value={this.props.funIndex}
-                        //onChange={event => this.setState({funIndex: event.target.value})}>
-                        onChange={this.updateFunction}>
-                        {funcList}
-                    </select>
-                </label>
-                <Slider min={32} max={256} step={32} value={this.state.numColors} enabled={true} caption={"Colors:"}
-                        updateData={this.updateNumColors}/>
-                <CheckBox isChecked={this.state.isLegend} caption={"Legend"} updateData={this.updateCheckbox}/>
-
-
-            </fieldset>
+            this.props.mesh ?
+                <fieldset className="resultBox">
+                    <legend>Result</legend>
+                    <label>Function:&nbsp;
+                        <select
+                            name="Function"
+                            size={1}
+                            value={this.props.funIndex}
+                            //onChange={event => this.setState({funIndex: event.target.value})}>
+                            onChange={this.updateFunction}>
+                            {
+                                this.props.mesh ? this.props.mesh.func.map((v, i) => (<option value={i}>{v.name}</option>)) : null
+                            }
+                        </select>
+                    </label>
+                    <Slider min={32} max={256} step={32} value={this.props.numColors} enabled={true} caption={"Colors:"}
+                            updateData={this.updateNumColors}/>
+                    <CheckBox isChecked={this.props.isLegend} caption={"Legend"} updateData={this.updateCheckbox}/>
+                </fieldset>
+            : null
         )
     }
 }
 
 class VisualizationBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            funIndex: this.props.funIndex,
-            isAxes: this.props.isAxes,
-        };
-    }
     updateRadio = (event) => {
         if (event === "Mesh and surface") {
-            renderParams.isMesh = true;
-            renderParams.isSurface = true;
+            this.props.updateRadio(0);
         } else if (event === "Mesh") {
-            renderParams.isMesh = true;
-            renderParams.isSurface = false;
+            this.props.updateRadio(1);
         } else {
-            renderParams.isMesh = false;
-            renderParams.isSurface = true;
+            this.props.updateRadio(2);
         }
-    }
-    updateCheckbox = (event) => {
-        this.setState({isAxes: !event});
-        renderParams.isAxes = !renderParams.isAxes;
     }
     render() {
         return (
-            <fieldset className="visualizationBox">
-                <legend>Visualization</legend>
-                <RadioBox name={"ViewOption"} value={"Mesh and surface"} checked={true}
-                          updateData={this.updateRadio}/>
-                <RadioBox name={"ViewOption"} value={"Mesh"} updateData={this.updateRadio}/>
-                <RadioBox name={"ViewOption"} value={"Surface"} updateData={this.updateRadio}/>
-                <CheckBox isChecked={this.state.isAxes} caption={"Coordinate axes"} updateData={this.updateCheckbox}/>
-
-            </fieldset>
+            this.props.mesh ?
+                <fieldset className="visualizationBox">
+                    <legend>Visualization</legend>
+                    <RadioBox name={"ViewOption"} value={"Mesh and surface"}
+                              checked={this.props.isSurface && this.props.isMesh}
+                              updateData={this.updateRadio}/>
+                    <RadioBox name={"ViewOption"} value={"Mesh"} checked={!this.props.isSurface && this.props.isMesh}
+                              updateData={this.updateRadio}/>
+                    <RadioBox name={"ViewOption"} value={"Surface"} checked={this.props.isSurface && !this.props.isMesh}
+                              updateData={this.updateRadio}/>
+                    <CheckBox isChecked={this.props.isAxes} caption={"Coordinate axes"}
+                              updateData={this.props.updateIsAxes}/>
+                </fieldset>
+            : null
         )
     }
 }
 
 class TransformationSceneBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            scale: 1.0,
-            translateX: 0.0,
-            translateY: 0.0,
-            translateZ: 0.0,
-        };
-    }
     updateTranslateX = (event) => {
-        this.setState({translateX: event});
-        renderParams.translateX = event;
+        this.props.updateTranslateX(Number(event))
     }
     updateTranslateY = (event) => {
-        this.setState({translateY: event});
-        renderParams.translateY = event;
+        this.props.updateTranslateY(Number(event))
     }
-    updateScale = (event) => {
-        this.setState({scale: event});
-        renderParams.scale = event;
-    }
-
     render() {
         return (
-            <fieldset className="transformationSceneBox">
-                <legend>Transformation scene</legend>
-                <Slider min={-1} max={1} step={0.25} value={this.state.translateX} enabled={true}
-                        caption={"Translate X:"}
-                        updateData={this.updateTranslateX}/>
-                <Slider min={-1} max={1} step={0.25} value={this.state.translateY} enabled={true}
-                        caption={"Translate Y:"}
-                        updateData={this.updateTranslateY}/>
-                <Slider min={0.5} max={5} step={0.5} value={this.state.scale} enabled={true} caption={"Scale:"}
-                        updateData={this.updateScale}/>
-            </fieldset>
+            this.props.mesh ?
+                <fieldset className="transformationSceneBox">
+                    <legend>Transformation scene</legend>
+                    <Slider min={-1} max={1} step={0.25} value={this.props.translate[0]} enabled={true}
+                            caption={"Translate X:"}
+                            updateData={this.updateTranslateX}/>
+                    <Slider min={-1} max={1} step={0.25} value={this.props.translate[1]} enabled={true}
+                            caption={"Translate Y:"}
+                            updateData={this.updateTranslateY}/>
+                    <Slider min={0.5} max={5} step={0.5} value={this.props.scale} enabled={true} caption={"Scale:"}
+                            updateData={this.props.updateScale}/>
+                </fieldset>
+            : null
         )
     }
 }
@@ -195,64 +127,69 @@ class TransformationObjectBox extends React.Component {
     }
     render() {
         return (
-            <fieldset className="transformationObjectBox">
-                <legend>Transformation object</legend>
-                <label>Transformation X:&nbsp;
-                    <select
-                        name="Function"
-                        size={1}
-                        value={this.state.index[0]}
-                        onChange={(event) => this.setState({
-                            index: [event.target.value, this.state.index[1], this.state.index[2]]
-                        })}>
-                        {
-                            renderParams.mesh.func.map((v, i) => (
-                                <option value={i} selected={i===0}>{v.name}</option>))
-                        }
-                    </select>
-                </label>
-                <label>Transformation Y:&nbsp;
-                    <select
-                        name="Function"
-                        value={this.state.index[1]}
-                        size={1}
-                        onChange={(event) => this.setState({
-                            index: [this.state.index[0], event.target.value, this.state.index[2]]
-                        })}>
-                        {
-                            renderParams.mesh.func.map((v, i) => (
-                                <option value={i} selected={i===1}>{v.name}</option>))
-                        }
-                    </select>
-                </label>
-                {
-                    renderParams.mesh.feType.indexOf("fe2d") === -1 ?
-                        <label>Transformation Z:&nbsp;
-                            <select
-                                name="Function"
-                                value={this.state.index[2]}
-                                size={1}
-                                onChange={(event) => this.setState({
-                                    index: [this.state.index[0], this.state.index[1], event.target.value]
-                                })}>
-                                {
-                                    renderParams.mesh.func.map((v, i) => (
-                                        <option value={i} selected={i === 2}>{v.name}</option>))
-                                }
-                            </select>
-                        </label> : null
-                }
-                <Slider min={0} max={0.5} step={0.1} value={this.state.ratio} enabled={true}
-                        caption={"Ratio:"}
-                        updateData={(event) => {
-                            let value = Number(event);
-                            this.setState({ratio: value});
-                            renderParams.isTransformation = value !== 0;
-                            renderParams.transformParam.index = this.state.index;
-                            renderParams.transformParam.ratio = value;
-                            renderImage();
-                        }}/>
-            </fieldset>
+            this.props.mesh ?
+                <fieldset className="transformationObjectBox">
+                    <legend>Transformation object</legend>
+                    <label>Transformation X:&nbsp;
+                        <select
+                            name="Function"
+                            size={1}
+                            value={this.state.index[0]}
+                            onChange={(event) => this.setState({
+                                index: [event.target.value, this.state.index[1], this.state.index[2]]
+                            })}>
+                            {
+                                this.props.mesh ? this.props.mesh.func.map((v, i) => (
+                                    <option value={i} selected={i===0}>{v.name}</option>
+                                )) : null
+                            }
+                        </select>
+                    </label>
+                    <label>Transformation Y:&nbsp;
+                        <select
+                            name="Function"
+                            value={this.state.index[1]}
+                            size={1}
+                            onChange={(event) => this.setState({
+                                index: [this.state.index[0], event.target.value, this.state.index[2]]
+                            })}>
+                            {
+                                this.props.mesh ? this.props.mesh.func.map((v, i) => (
+                                    <option value={i} selected={i===1}>{v.name}</option>)
+                                ) : null
+                            }
+                        </select>
+                    </label>
+                    {
+                        this.props.mesh && this.props.mesh.feType.indexOf("fe2d") === -1 ?
+                            <label>Transformation Z:&nbsp;
+                                <select
+                                    name="Function"
+                                    value={this.state.index[2]}
+                                    size={1}
+                                    onChange={(event) => this.setState({
+                                        index: [this.state.index[0], this.state.index[1], event.target.value]
+                                    })}>
+                                    {
+                                        this.props.mesh ? this.props.mesh.func.map((v, i) => (
+                                            <option value={i} selected={i === 2}>{v.name}</option>)
+                                        ) : null
+                                    }
+                                </select>
+                            </label> : null
+                    }
+                    <Slider min={0} max={0.5} step={0.1} value={this.state.ratio} enabled={true}
+                            caption={"Ratio:"}
+                            updateData={(event) => {
+                                let value = Number(event);
+                                this.setState({ratio: value});
+                                renderParams.isTransformation = value !== 0;
+                                renderParams.transformParam.index = this.state.index;
+                                renderParams.transformParam.ratio = value;
+                                renderImage();
+                            }}/>
+                </fieldset>
+            : null
         )
     }
 }
@@ -262,22 +199,115 @@ export class Forms extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isFileOpened: false,
-            funIndex: null,
+            mesh: null,
             isLegend: true,
+            isAutoRotation: true,
+            isAxes: true,
+            funIndex: 0,
+            numColors: 32,
+            rotation: [0.0, 0.0, 0.0],
+            translate: [0.0, 0.0, 0.0],
+            scale: 0.0,
         };
     }
-
     updateFile = (value) => {
-        this.setState({isFileOpened: value.isFileOpened});
-        this.setState({funIndex: value.funIndex});
-        if (value.isFileOpened === true) {
+        this.setState({mesh: value.mesh});
+        this.setState({funIndex: 0});
+        this.setState({isLegend: true});
+        this.setState({isAutoRotation: true});
+        this.setState({isAxes: true});
+        this.setState({numColors: 32});
+        this.setState({rotation: [0.0, 0.0, 0.0]});
+        this.setState({translate: [0.0, 0.0, 0.0]});
+        this.setState({scale: 1.0});
+        this.setState({isMesh: true});
+        this.setState({isSurface: true});
+        if (value.mesh) {
+            renderParams.mesh = value.mesh;
+            renderParams.funIndex = 0;
+            renderParams.numColors = 32;
+            renderParams.isLegend = true;
+            renderParams.isAutoRotation = true;
+            renderParams.isAxes = true;
+            renderParams.rotation = [0.0, 0.0, 0.0];
+            renderParams.translate = [0.0, 0.0, 0.0];
+            renderParams.scale = 1.0;
+            renderParams.isMesh = true;
+            renderParams.isSurface = true;
             renderImage();
         }
     }
-    updateResult = (value) => {
+    updateFunIndex = (value) => {
         this.setState({funIndex: value.funIndex});
+        renderParams.funIndex = value.funIndex;
+        renderImage();
+    }
+    updateNumColors = (value) => {
+        this.setState({numColors: value.numColors});
+        renderParams.numColors = value.numColors;
+        renderImage();
+    }
+    updateIsLegend = (value) => {
         this.setState({isLegend: value.isLegend});
+        renderParams.isLegend = value.isLegend;
+        //renderImage();
+    }
+    updateRotationX = (value) => {
+        this.setState({rotation: [value, this.state.rotation[1], this.state.rotation[2]]});
+        renderParams.rotation[0] = value;
+    }
+    updateRotationY = (value) => {
+        this.setState({rotation: [this.state.rotation[0], value, this.state.rotation[2]]});
+        renderParams.rotation[1] = value;
+    }
+    updateRotationZ = (value) => {
+        this.setState({rotation: [this.state.rotation[0], this.state.rotation[1], value]});
+        renderParams.rotation[2] = value;
+    }
+    updateIsAutoRotation = (value) => {
+        this.setState({isAutoRotation: value});
+        if (value === false) {
+            this.setState({rotation: [
+                Math.round(radToDeg(renderParams.rotation[0])) % 360,
+                Math.round(radToDeg(renderParams.rotation[1])) % 360,
+                Math.round(radToDeg(renderParams.rotation[2])) % 360,
+            ]});
+        }
+        renderParams.isAutoRotation = value;
+    }
+    updateIsAxes = (value) => {
+        this.setState({isAxes: value});
+        renderParams.isAxes = value;
+    }
+    updateRadio = (value) => {
+        if (value === 0) {
+            this.setState({isMesh: true});
+            this.setState({isSurface: true});
+            renderParams.isMesh = true;
+            renderParams.isSurface = true;
+        } else if (value === 1) {
+            this.setState({isMesh: true});
+            this.setState({isSurface: false});
+            renderParams.isMesh = true;
+            renderParams.isSurface = false;
+        } else {
+            this.setState({isMesh: false});
+            this.setState({isSurface: true});
+            renderParams.isMesh = false;
+            renderParams.isSurface = true;
+        }
+    }
+    updateScale = (value) => {
+        this.setState({scale: value});
+        renderParams.scale = value;
+    }
+    updateTranslateX = (value) => {
+        this.setState({translate: [value, this.state.translate[1], this.state.translate[2]]});
+        renderParams.translate[0] = value;
+    }
+    updateTranslateY = (value) => {
+        this.setState({translate: [this.state.translate[0], value, this.state.translate[2]]});
+        renderParams.translate[1] = value;
     }
 
     render() {
@@ -288,18 +318,22 @@ export class Forms extends React.Component {
                     <Canvas id={"gl"}/>
                     <Canvas id={"text"}/>
                     <div className="parametersBox">
-                        {
-                            this.state.funIndex !== null ? <ResultBox funIndex={this.state.funIndex}
-                                                                      updateData={this.updateResult}/> : null
-                        }
-                        {
-                            this.state.isFileOpened ? <RotateBox angleX={0} angleY={0} angleZ={0} isAutoRotation={true}
-                                                                 sliderEnabled={false}/> : null
-                        }
-                        {this.state.isFileOpened ?
-                            <VisualizationBox funIndex={this.state.funIndex} isAxes={true}/> : null}
-                        {this.state.isFileOpened ? <TransformationSceneBox/> : null}
-                        {renderParams.funIndex !== null ? <TransformationObjectBox/> : null}
+                        <ResultBox funIndex={this.state.funIndex} numColors={this.state.numColors}
+                                   isLegend={this.state.isLegend} mesh={this.state.mesh}
+                                   updateFunIndex={this.updateFunIndex} updateNumColors={this.updateNumColors}
+                                   updateIsLegend={this.updateIsLegend}/>
+                        <RotateBox rotation={this.state.rotation} isAutoRotation={this.state.isAutoRotation}
+                                   updateRotationX={this.updateRotationX} updateRotationY={this.updateRotationY}
+                                   updateRotationZ={this.updateRotationZ}
+                                   updateIsAutoRotation={this.updateIsAutoRotation} mesh={this.state.mesh}/>
+                        <VisualizationBox mesh={this.state.mesh} isAxes={this.state.isAxes} isMesh={this.state.isMesh}
+                                          isSurface={this.state.isSurface} updateIsAxes={this.updateIsAxes}
+                                          updateRadio={this.updateRadio}/>
+                        <TransformationSceneBox mesh={this.state.mesh} translate={this.state.translate}
+                                                scale={this.state.scale} updateScale={this.updateScale}
+                                                updateTranslateX={this.updateTranslateX}
+                                                updateTranslateY={this.updateTranslateY}/>
+                        <TransformationObjectBox funIndex={this.state.funIndex} mesh={this.state.mesh}/>
                     </div>
                 </div>
             </form>

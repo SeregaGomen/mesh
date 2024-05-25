@@ -1,5 +1,4 @@
 // Load *.mesh file (internal format)
-import {renderParams} from "../draw/draw";
 import {createMatrix} from "../utils/utils";
 
 export function loadMesh(fileData, mesh) {
@@ -628,7 +627,6 @@ export function loadFile(file) {
             let fileData = {
                 data: reader.result
             };
-            renderParams.funIndex = null;
             switch (fileExt.toUpperCase()) {
                 case "MESH":
                     ok = loadMesh(fileData, mesh);
@@ -642,31 +640,28 @@ export function loadFile(file) {
                 case "RES":
                 case "QRES":
                     ok = loadRes(fileData, mesh);
-                    renderParams.funIndex = 0;
                     break;
                 case "TXT":
                     ok = loadTxt(fileData, mesh);
-                    renderParams.funIndex = 0;
                     break;
                 default:
                     console.log("Unknown file format!");
                     //alert("Unknown file format!");
-                    reject({isFileOpened: false, funIndex: null});
+                    reject({mesh: null});
                     return;
             }
             if (ok) {
-                renderParams.mesh = mesh;
-                resolve({isFileOpened: true, funIndex: renderParams.funIndex});
+                resolve({mesh: mesh});
             } else {
                 console.log("Unable to read file!");
                 //alert("Unable to read file!");
-                reject({isFileOpened: false, funIndex: null});
+                reject({mesh: null});
             }
         };
         reader.onerror = function () {
             //alert(reader.error);
             console.log(reader.error);
-            reject({isFileOpened: false, funIndex: null});
+            reject({mesh: null});
         };
     });
 }

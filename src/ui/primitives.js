@@ -34,28 +34,18 @@ export class LoadButton extends React.Component {
 }
 
 export class RadioBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: props.value,
-            name: props.name,
-            checked: props.checked,
-        };
-    }
-
     render() {
         return (
             <label>
                 <input type="radio"
-                       value={this.state.value}
-                       name={this.state.name}
-                       defaultChecked={this.props.checked}
-                       onChange={() => {
-                           this.setState({checked: true});
-                           this.props.updateData(this.state.value);
+                       value={this.props.value}
+                       name={this.props.name}
+                       checked={this.props.checked}
+                       onChange={(event) => {
+                           this.props.updateData(event.target.value);
                        }}
                 />
-                {this.state.value}
+                {this.props.value}
             </label>
         );
     }
@@ -65,8 +55,7 @@ export class CheckBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            caption: props.caption,
-            isChecked: props.isChecked,
+            isChecked: this.props.isChecked,
         };
     }
 
@@ -74,13 +63,13 @@ export class CheckBox extends React.Component {
         return (
             <label>
                 <input type="checkbox"
-                       checked={this.state.isChecked}
+                       checked={this.props.isChecked}
                        onChange={() => {
                            this.setState({isChecked: !this.state.isChecked});
-                           this.props.updateData(this.state.isChecked);
+                           this.props.updateData(!this.state.isChecked);
                        }}
                 />
-                {this.state.caption}
+                {this.props.caption}
             </label>
         );
     }
@@ -91,31 +80,26 @@ export class CheckBox extends React.Component {
 // https://ru.react.js.org/docs/getting-started.html
 
 export class Slider extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            min: props.min,
-            max: props.max,
-            step: props.step,
-            value: props.value,
-            caption: props.caption,
-            enabled: props.enabled,
-        };
-    }
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //         //value: this.props.value,
+    //     };
+    // }
     render() {
         return (
             <div className={"field"}>
-                <label>{this.state.caption}</label>
+                <label>{this.props.caption}</label>
                 <>
                     <input type="range"
-                           min={this.state.min}
-                           max={this.state.max}
-                           step={this.state.step}
+                           min={this.props.min}
+                           max={this.props.max}
+                           step={this.props.step}
                            value={this.props.value}
                            disabled={!this.props.enabled}
                            onChange={(event) => {
-                               this.setState({value: event.target.value});
-                               this.props.updateData(event.target.value);
+                               //this.setState({value: Number(event.target.value)});
+                               this.props.updateData(Number(event.target.value));
                            }}
                     />
                     {this.props.value}
