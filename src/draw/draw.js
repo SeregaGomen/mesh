@@ -516,6 +516,11 @@ function renderScene(gl, ctx, programInfo, buffers) {
     // Clear the 2D canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+    if (!renderParams.mesh) {
+        cancelAnimationFrame(renderData.id);
+        return;
+    }
+
 
     // gl.enable(gl.POLYGON_OFFSET_FILL);
     // gl.polygonOffset(0.0, -1.0);

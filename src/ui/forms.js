@@ -49,7 +49,7 @@ class ResultBox extends React.Component {
     }
     render() {
         return (
-            this.props.mesh ?
+            this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="resultBox">
                     <legend>Result</legend>
                     <label>Function:&nbsp;
@@ -147,7 +147,7 @@ class TransformationObjectBox extends React.Component {
     }
     render() {
         return (
-            this.props.mesh ?
+            this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="transformationObjectBox">
                     <legend>Transformation object</legend>
                     <label>Transformation X:&nbsp;
@@ -219,6 +219,10 @@ export class Forms extends React.Component {
                 ratio: 0.0,
             }
         };
+    }
+    clear = () => {
+        this.setState({mesh: null});
+        renderParams.mesh = null;
     }
     updateFile = (value) => {
         this.setState({mesh: value.mesh});
@@ -326,7 +330,7 @@ export class Forms extends React.Component {
     render() {
         return (
             <form>
-                <LoadButton updateData={this.updateFile}/>
+                <LoadButton updateData={this.updateFile} clear={this.clear}/>
                 <div className="container">
                     <Canvas id={"gl"}/>
                     <Canvas id={"text"}/>
