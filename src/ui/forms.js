@@ -130,12 +130,20 @@ class TransformationSceneBox extends React.Component {
 }
 
 class TransformationObjectBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            index: [0, 1, 2],
-            ratio: 0.0,
-        };
+    updateTransformationX = (event) => {
+        this.props.updateTransformationIndex([Number(event.target.value), this.props.transformation.index[1],
+            this.props.transformation.index[2]])
+    }
+    updateTransformationY = (event) => {
+        this.props.updateTransformationIndex([this.props.transformation.index[0], Number(event.target.value),
+            this.props.transformation.index[2]])
+    }
+    updateTransformationZ = (event) => {
+        this.props.updateTransformationIndex([this.props.transformation.index[0], this.props.transformation.index[1],
+            Number(event.target.value)])
+    }
+    updateTransformationRatio = (event) => {
+        this.props.updateTransformationRatio(event)
     }
     render() {
         return (
@@ -146,10 +154,8 @@ class TransformationObjectBox extends React.Component {
                         <select
                             name="Function"
                             size={1}
-                            value={this.state.index[0]}
-                            onChange={(event) => this.setState({
-                                index: [event.target.value, this.state.index[1], this.state.index[2]]
-                            })}>
+                            value={this.props.transformation.index[0]}
+                            onChange={this.updateTransformationX}>
                             {
                                 this.props.mesh ? this.props.mesh.func.map((v, i) => (
                                     <option value={i} selected={i===0}>{v.name}</option>
@@ -160,11 +166,9 @@ class TransformationObjectBox extends React.Component {
                     <label>Transformation Y:&nbsp;
                         <select
                             name="Function"
-                            value={this.state.index[1]}
+                            value={this.props.transformation.index[1]}
                             size={1}
-                            onChange={(event) => this.setState({
-                                index: [this.state.index[0], event.target.value, this.state.index[2]]
-                            })}>
+                            onChange={this.updateTransformationY}>
                             {
                                 this.props.mesh ? this.props.mesh.func.map((v, i) => (
                                     <option value={i} selected={i===1}>{v.name}</option>)
@@ -177,11 +181,9 @@ class TransformationObjectBox extends React.Component {
                             <label>Transformation Z:&nbsp;
                                 <select
                                     name="Function"
-                                    value={this.state.index[2]}
+                                    value={this.props.transformation.index[2]}
                                     size={1}
-                                    onChange={(event) => this.setState({
-                                        index: [this.state.index[0], this.state.index[1], event.target.value]
-                                    })}>
+                                    onChange={this.updateTransformationZ}>
                                     {
                                         this.props.mesh ? this.props.mesh.func.map((v, i) => (
                                             <option value={i} selected={i === 2}>{v.name}</option>)
@@ -190,16 +192,8 @@ class TransformationObjectBox extends React.Component {
                                 </select>
                             </label> : null
                     }
-                    <Slider min={0} max={0.5} step={0.1} value={this.state.ratio} enabled={true}
-                            caption={"Ratio:"}
-                            updateData={(event) => {
-                                let value = Number(event);
-                                this.setState({ratio: value});
-                                renderParams.isTransformation = value !== 0;
-                                renderParams.transformParam.index = this.state.index;
-                                renderParams.transformParam.ratio = value;
-                                renderImage();
-                            }}/>
+                    <Slider min={0} max={0.5} step={0.1} value={this.props.transformation.ratio} enabled={true}
+                            caption={"Ratio:"} updateData={this.updateTransformationRatio}/>
                 </fieldset>
             : null
         )
@@ -220,6 +214,10 @@ export class Forms extends React.Component {
             rotation: [0.0, 0.0, 0.0],
             translate: [0.0, 0.0, 0.0],
             scale: 0.0,
+            transformation: {
+                index: [0, 1, 2],
+                ratio: 0.0,
+            }
         };
     }
     updateFile = (value) => {
@@ -234,6 +232,7 @@ export class Forms extends React.Component {
         this.setState({scale: 1.0});
         this.setState({isMesh: true});
         this.setState({isSurface: true});
+        this.setState({transformation: {index: [0, 1, 2], ratio: 0.0}});
         if (value.mesh) {
             renderParams.mesh = value.mesh;
             renderParams.funIndex = 0;
@@ -246,6 +245,7 @@ export class Forms extends React.Component {
             renderParams.scale = 1.0;
             renderParams.isMesh = true;
             renderParams.isSurface = true;
+            renderParams.transformation = {index: [0, 1, 2], ratio: 0.0};
             renderImage();
         }
     }
@@ -309,6 +309,19 @@ export class Forms extends React.Component {
         this.setState({translate: value});
         renderParams.translate = value;
     }
+    updateTransformationIndex = (value) => {
+        this.setState({transformation: {index: value, ratio: this.state.transformation.ratio}});
+        renderParams.transformation.index = value;
+        if (this.state.transformation.ratio) {
+            renderImage();
+        }
+    }
+    updateTransformationRatio = (value) => {
+        this.setState({transformation: {index: this.state.transformation.index, ratio: value}});
+        renderParams.isTransformation = value !== 0;
+        renderParams.transformation.ratio = value;
+        renderImage();
+    }
 
     render() {
         return (
@@ -331,7 +344,10 @@ export class Forms extends React.Component {
                         <TransformationSceneBox mesh={this.state.mesh} translate={this.state.translate}
                                                 scale={this.state.scale} updateScale={this.updateScale}
                                                 updateTranslate={this.updateTranslate}/>
-                        <TransformationObjectBox funIndex={this.state.funIndex} mesh={this.state.mesh}/>
+                        <TransformationObjectBox funIndex={this.state.funIndex} mesh={this.state.mesh}
+                                                 transformation={this.state.transformation}
+                                                 updateTransformationIndex={this.updateTransformationIndex}
+                                                 updateTransformationRatio={this.updateTransformationRatio}/>
                     </div>
                 </div>
             </form>

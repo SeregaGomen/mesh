@@ -31,7 +31,7 @@ export let renderParams = {
     isAxes: true,
     isLegend: true,
     isTransformation: false,
-    transformParam: {
+    transformation: {
         index: [0, 1, 2],
         ratio: 0.0,
     }
@@ -161,11 +161,11 @@ export function renderImage() {
     if (renderParams.isTransformation) {
         renderData.maxTransformRatio = 0.0;
         for (let k = 0; k < 3; k++) {
-            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU) > renderData.maxTransformRatio) {
-                renderData.maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].maxU);
+            if (Math.abs(renderParams.mesh.func[renderParams.transformation.index[k]].maxU) > renderData.maxTransformRatio) {
+                renderData.maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformation.index[k]].maxU);
             }
-            if (Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU) > renderData.maxTransformRatio) {
-                renderData.maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformParam.index[k]].minU);
+            if (Math.abs(renderParams.mesh.func[renderParams.transformation.index[k]].minU) > renderData.maxTransformRatio) {
+                renderData.maxTransformRatio = Math.abs(renderParams.mesh.func[renderParams.transformation.index[k]].minU);
             }
         }
     }
@@ -476,8 +476,8 @@ function resizeCanvasToDisplaySize(canvas, multiplier) {
 
 function tX(i, j) {
     if (renderParams.isTransformation) {
-        return renderParams.mesh.x[i][j] + renderParams.transformParam.ratio * renderData.radius *
-            (renderParams.mesh.func[renderParams.transformParam.index[j]].results[i] / renderData.maxTransformRatio);
+        return renderParams.mesh.x[i][j] + renderParams.transformation.ratio * renderData.radius *
+            (renderParams.mesh.func[renderParams.transformation.index[j]].results[i] / renderData.maxTransformRatio);
     }
     return renderParams.mesh.x[i][j];
 }
