@@ -97,7 +97,6 @@ export class Slider extends React.Component {
                            max={this.props.max}
                            step={this.props.step}
                            value={this.props.value}
-                           disabled={!this.props.enabled}
                            onChange={(event) => {
                                //this.setState({value: Number(event.target.value)});
                                this.props.updateData(Number(event.target.value));
