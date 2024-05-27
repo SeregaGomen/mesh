@@ -13,24 +13,33 @@ class RotateBox extends React.Component {
                     <legend>Rotation</legend>
                     <CheckBox isChecked={this.props.isAutoRotation} caption={"Auto-rotation"}
                               updateData={this.props.updateIsAutoRotation}/>
-                    <Slider min={0} max={360} step={1} value={this.props.rotation[0]} caption={"X:"}
-                            enabled={!this.props.isAutoRotation} updateData={
-                        (value) => {
-                            this.props.updateRotation([value, this.props.rotation[1], this.props.rotation[2]])
-                        }
-                    }/>
-                    <Slider min={0} max={360} step={1} value={this.props.rotation[1]} caption={"Y:"}
-                            enabled={!this.props.isAutoRotation} updateData={
-                        (value) => {
-                            this.props.updateRotation([this.props.rotation[0], value, this.props.rotation[2]])
-                        }
-                    }/>
-                    <Slider min={0} max={360} step={1} value={this.props.rotation[2]} caption={"Z:"}
-                            enabled={!this.props.isAutoRotation} updateData={
-                        (value) => {
-                            this.props.updateRotation([this.props.rotation[0], this.props.rotation[1], value])
-                        }
-                    }/>
+                    {
+                        !this.props.isAutoRotation ?
+                            <Slider min={0} max={360} step={1} value={this.props.rotation[0]} caption={"X:"}
+                                    updateData={(val) => {
+                                        this.props.updateRotation([val, this.props.rotation[1], this.props.rotation[2]])
+                                    }}
+                            />
+                        : null
+                    }
+                    {
+                        !this.props.isAutoRotation ?
+                            <Slider min={0} max={360} step={1} value={this.props.rotation[1]} caption={"Y:"}
+                                    updateData={(val) => {
+                                        this.props.updateRotation([this.props.rotation[0], val, this.props.rotation[2]])
+                                    }}
+                            />
+                        : null
+                    }
+                    {
+                        !this.props.isAutoRotation ?
+                            <Slider min={0} max={360} step={1} value={this.props.rotation[2]} caption={"Z:"}
+                                    updateData={(val) => {
+                                        this.props.updateRotation([this.props.rotation[0], this.props.rotation[1], val])
+                                    }}
+                            />
+                        : null
+                    }
                 </fieldset>
             : null
         )
