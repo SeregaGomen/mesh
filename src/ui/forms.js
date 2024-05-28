@@ -1,6 +1,6 @@
 import React from "react";
 import {renderImage, renderParams} from '../draw/draw';
-import {radToDeg} from '../utils/utils';
+import {degToRad, radToDeg} from '../utils/utils';
 import {Canvas, CheckBox, Slider, LoadButton, RadioBox} from './primitives';
 
 
@@ -279,7 +279,7 @@ export class Forms extends React.Component {
     }
     updateRotation = (value) => {
         this.setState({rotation: value});
-        renderParams.rotation = value;
+        renderParams.rotation = [degToRad(value[0]), degToRad(value[1]), degToRad(value[2])];
     }
     updateIsAutoRotation = (value) => {
         this.setState({isAutoRotation: value});

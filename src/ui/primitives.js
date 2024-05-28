@@ -81,12 +81,6 @@ export class CheckBox extends React.Component {
 // https://ru.react.js.org/docs/getting-started.html
 
 export class Slider extends React.Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         //value: this.props.value,
-    //     };
-    // }
     render() {
         return (
             <div className={"field"}>
@@ -98,7 +92,6 @@ export class Slider extends React.Component {
                            step={this.props.step}
                            value={this.props.value}
                            onChange={(event) => {
-                               //this.setState({value: Number(event.target.value)});
                                this.props.updateData(Number(event.target.value));
                            }}
                     />
