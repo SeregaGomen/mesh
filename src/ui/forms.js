@@ -112,7 +112,7 @@ class VisualizationBox extends React.Component {
     }
 }
 
-class TransformationSceneBox extends React.Component {
+class TranslationSceneBox extends React.Component {
     updateTranslateX = (event) => {
         this.props.updateTranslate([Number(event), this.props.translate[1], this.props.translate[2]])
     }
@@ -122,18 +122,30 @@ class TransformationSceneBox extends React.Component {
     render() {
         return (
             this.props.mesh ?
-                <fieldset className="transformationSceneBox">
-                    <legend>Transformation scene</legend>
-                    <Slider min={-1} max={1} step={0.25} value={this.props.translate[0]} enabled={true}
-                            caption={"Translate X:"}
+                <fieldset className="TranslationSceneBox">
+                    <legend>Translation scene</legend>
+                    <Slider min={-1.00} max={1.00} step={0.25} value={this.props.translate[0]} enabled={true}
+                            caption={"X:"}
                             updateData={this.updateTranslateX}/>
-                    <Slider min={-1} max={1} step={0.25} value={this.props.translate[1]} enabled={true}
-                            caption={"Translate Y:"}
+                    <Slider min={-1.00} max={1.00} step={0.25} value={this.props.translate[1]} enabled={true}
+                            caption={"Y:"}
                             updateData={this.updateTranslateY}/>
-                    <Slider min={0.5} max={5} step={0.5} value={this.props.scale} enabled={true} caption={"Scale:"}
-                            updateData={this.props.updateScale}/>
                 </fieldset>
             : null
+        )
+    }
+}
+
+class ScaleSceneBox extends React.Component {
+    render() {
+        return (
+            this.props.mesh ?
+                <fieldset className="scaleSceneBox">
+                    <legend>Scale scene</legend>
+                    <Slider min={0.5} max={5.0} step={0.5} value={this.props.scale} enabled={true} caption={"Ratio:"}
+                            updateData={this.props.updateScale}/>
+                </fieldset>
+                : null
         )
     }
 }
@@ -159,7 +171,7 @@ class TransformationObjectBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="transformationObjectBox">
                     <legend>Transformation object</legend>
-                    <label>Transformation X:&nbsp;
+                    <label>X:&nbsp;
                         <select
                             name="Function"
                             size={1}
@@ -172,7 +184,7 @@ class TransformationObjectBox extends React.Component {
                             }
                         </select>
                     </label>
-                    <label>Transformation Y:&nbsp;
+                    <label>Y:&nbsp;
                         <select
                             name="Function"
                             value={this.props.transformation.index[1]}
@@ -187,7 +199,7 @@ class TransformationObjectBox extends React.Component {
                     </label>
                     {
                         this.props.mesh && this.props.mesh.feType.indexOf("fe2d") === -1 ?
-                            <label>Transformation Z:&nbsp;
+                            <label>Z:&nbsp;
                                 <select
                                     name="Function"
                                     value={this.props.transformation.index[2]}
@@ -354,9 +366,9 @@ export class Forms extends React.Component {
                         <VisualizationBox mesh={this.state.mesh} isAxes={this.state.isAxes} isMesh={this.state.isMesh}
                                           isSurface={this.state.isSurface} updateIsAxes={this.updateIsAxes}
                                           updateRadio={this.updateRadio}/>
-                        <TransformationSceneBox mesh={this.state.mesh} translate={this.state.translate}
-                                                scale={this.state.scale} updateScale={this.updateScale}
-                                                updateTranslate={this.updateTranslate}/>
+                        <TranslationSceneBox mesh={this.state.mesh} translate={this.state.translate}
+                                             updateTranslate={this.updateTranslate}/>
+                        <ScaleSceneBox mesh={this.state.mesh} scale={this.state.scale} updateScale={this.updateScale}/>
                         <TransformationObjectBox funIndex={this.state.funIndex} mesh={this.state.mesh}
                                                  transformation={this.state.transformation}
                                                  updateTransformationIndex={this.updateTransformationIndex}
