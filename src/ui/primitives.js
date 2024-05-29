@@ -83,18 +83,19 @@ export class CheckBox extends React.Component {
 export class Slider extends React.Component {
     render() {
         return (
-            <div className={"field"}>
-                <label>{this.props.caption}</label>
-                <input type="range"
-                       min={this.props.min}
-                       max={this.props.max}
-                       step={this.props.step}
-                       value={this.props.value}
-                       onChange={(event) => {
-                           this.props.updateData(Number(event.target.value));
-                       }}
-                />
-                {this.props.value}
+            <div>
+                <label>{this.props.caption}
+                    <input type="range"
+                           min={this.props.min}
+                           max={this.props.max}
+                           step={this.props.step}
+                           value={this.props.value}
+                           onChange={(event) => {
+                               this.props.updateData(Number(event.target.value));
+                           }}
+                    />
+                    <span style={{display: "inline", border: "1px solid gray"}}>{this.props.value}</span>
+                </label>
             </div>
         );
     }
