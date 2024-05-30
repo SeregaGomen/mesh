@@ -76,6 +76,27 @@ export class CheckBox extends React.Component {
     }
 }
 
+export class ListBox extends React.Component {
+    render() {
+        return (
+            <label>{this.props.label}&nbsp;
+                <select
+                    name={this.props.name}
+                    size={1}
+                    value={this.props.value}
+                    onChange={this.props.updateData}>
+                    {
+                        this.props.mesh ? this.props.mesh.func.map((v, i) => (
+                            <option value={i} selected={i===this.props.index}>{v.name}</option>
+                        )) : null
+                    }
+                </select>
+            </label>
+        );
+    }
+}
+
+
 // https://react.dev/reference/react-dom/components/input
 // https://ru.legacy.reactjs.org/tutorial/tutorial.html
 // https://ru.react.js.org/docs/getting-started.html

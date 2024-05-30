@@ -1,7 +1,7 @@
 import React from "react";
 import {renderImage, renderParams} from '../draw/draw';
 import {degToRad, radToDeg} from '../utils/utils';
-import {Canvas, CheckBox, Slider, LoadButton, RadioBox} from './primitives';
+import {Canvas, CheckBox, Slider, LoadButton, RadioBox, ListBox} from './primitives';
 
 
 // https://medium.com/@jmuse/передача-данных-между-компонентами-в-react-d86394da2b50
@@ -171,47 +171,13 @@ class TransformationObjectBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="transformationObjectBox">
                     <legend>Transformation object</legend>
-                    <label>X:&nbsp;
-                        <select
-                            name="Function"
-                            size={1}
-                            value={this.props.transformation.index[0]}
-                            onChange={this.updateTransformationX}>
-                            {
-                                this.props.mesh ? this.props.mesh.func.map((v, i) => (
-                                    <option value={i} selected={i===0}>{v.name}</option>
-                                )) : null
-                            }
-                        </select>
-                    </label>
-                    <label>Y:&nbsp;
-                        <select
-                            name="Function"
-                            value={this.props.transformation.index[1]}
-                            size={1}
-                            onChange={this.updateTransformationY}>
-                            {
-                                this.props.mesh ? this.props.mesh.func.map((v, i) => (
-                                    <option value={i} selected={i===1}>{v.name}</option>)
-                                ) : null
-                            }
-                        </select>
-                    </label>
+                    <ListBox name={"Function"} label={"X:"} mesh={this.props.mesh} index={0}
+                             value={this.props.transformation.index[0]} updateData={this.updateTransformationX}/>
+                    <ListBox name={"Function"} label={"Y:"} mesh={this.props.mesh} index={1}
+                             value={this.props.transformation.index[1]} updateData={this.updateTransformationY}/>
                     {
-                        this.props.mesh && this.props.mesh.feType.indexOf("fe2d") === -1 ?
-                            <label>Z:&nbsp;
-                                <select
-                                    name="Function"
-                                    value={this.props.transformation.index[2]}
-                                    size={1}
-                                    onChange={this.updateTransformationZ}>
-                                    {
-                                        this.props.mesh ? this.props.mesh.func.map((v, i) => (
-                                            <option value={i} selected={i === 2}>{v.name}</option>)
-                                        ) : null
-                                    }
-                                </select>
-                            </label> : null
+                        <ListBox name={"Function"} label={"Z:"} mesh={this.props.mesh} index={2}
+                                 value={this.props.transformation.index[2]} updateData={this.updateTransformationZ}/>
                     }
                     <Slider min={0} max={0.5} step={0.1} value={this.props.transformation.ratio} enabled={true}
                             caption={"Ratio:"} updateData={this.updateTransformationRatio}/>
