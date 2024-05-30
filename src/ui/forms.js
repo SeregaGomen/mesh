@@ -61,18 +61,8 @@ class ResultBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="resultBox">
                     <legend>Result</legend>
-                    <label>Function:&nbsp;
-                        <select
-                            name="Function"
-                            size={1}
-                            value={this.props.funIndex}
-                            //onChange={event => this.setState({funIndex: event.target.value})}>
-                            onChange={this.updateFunction}>
-                            {
-                                this.props.mesh ? this.props.mesh.func.map((v, i) => (<option value={i}>{v.name}</option>)) : null
-                            }
-                        </select>
-                    </label>
+                    <ListBox name={"Function"} label={"Function:"} mesh={this.props.mesh} index={0}
+                             value={this.props.funIndex} updateData={this.updateFunction}/>
                     <Slider min={32} max={256} step={32} value={this.props.numColors} enabled={true} caption={"Colors:"}
                             updateData={this.updateNumColors}/>
                     <CheckBox isChecked={this.props.isLegend} caption={"Legend"} updateData={this.updateCheckbox}/>
