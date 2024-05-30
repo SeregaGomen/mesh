@@ -79,7 +79,7 @@ export class CheckBox extends React.Component {
 export class ListBox extends React.Component {
     render() {
         return (
-            <label>{this.props.label}&nbsp;
+            <label>{this.props.label}
                 <select
                     name={this.props.name}
                     size={1}

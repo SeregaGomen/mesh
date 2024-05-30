@@ -61,7 +61,7 @@ class ResultBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="resultBox">
                     <legend>Result</legend>
-                    <ListBox name={"Function"} label={"Function:"} mesh={this.props.mesh} index={0}
+                    <ListBox name={"Function"} label={"Function: "} mesh={this.props.mesh} index={0}
                              value={this.props.funIndex} updateData={this.updateFunction}/>
                     <Slider min={32} max={256} step={32} value={this.props.numColors} enabled={true} caption={"Colors:"}
                             updateData={this.updateNumColors}/>
@@ -161,12 +161,12 @@ class TransformationObjectBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="transformationObjectBox">
                     <legend>Transformation object</legend>
-                    <ListBox name={"Function"} label={"X:"} mesh={this.props.mesh} index={0}
+                    <ListBox name={"Function"} label={"X: "} mesh={this.props.mesh} index={0}
                              value={this.props.transformation.index[0]} updateData={this.updateTransformationX}/>
-                    <ListBox name={"Function"} label={"Y:"} mesh={this.props.mesh} index={1}
+                    <ListBox name={"Function"} label={"Y: "} mesh={this.props.mesh} index={1}
                              value={this.props.transformation.index[1]} updateData={this.updateTransformationY}/>
                     {
-                        <ListBox name={"Function"} label={"Z:"} mesh={this.props.mesh} index={2}
+                        <ListBox name={"Function"} label={"Z: "} mesh={this.props.mesh} index={2}
                                  value={this.props.transformation.index[2]} updateData={this.updateTransformationZ}/>
                     }
                     <Slider min={0} max={0.5} step={0.1} value={this.props.transformation.ratio} enabled={true}
