@@ -39,7 +39,8 @@ export class RenderMesh {
         
             void main() {
                 // Multiply the position by the matrix.
-                gl_Position = u_worldViewProjection * (u_scale * a_position - u_scale * u_translation_center) - u_translation;
+                gl_Position = u_worldViewProjection * (u_scale * a_position - u_scale * u_translation_center)
+                            - u_translation;
                 //gl_Position = u_worldViewProjection * (a_position - vec4(0.5, 0.5, 0.5, 0.0));
         
                 // orient the normals and pass to the fragment shader
@@ -115,8 +116,8 @@ export class RenderMesh {
         this.maxTransformRatio = 0.0;
         this.id = null;
         this.legend = {
-            color: [7],
-            value: [7],
+            color: Array(7),
+            value: Array(7),
         };
 
     }
@@ -332,17 +333,20 @@ export class RenderMesh {
         let isNormalize = false; // don't normalize the data
         let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
         let offset = 0;        // start at the beginning of the buffer
-        this.gl.vertexAttribPointer(this.programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
+        this.gl.vertexAttribPointer(this.programInfo.attribLocations.positionLocation, size, type, isNormalize, stride,
+            offset);
 
         // Turn on the normal attribute
         this.gl.enableVertexAttribArray(this.programInfo.attribLocations.normalLocation);
 
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.surface_normal);
-        this.gl.vertexAttribPointer(this.programInfo.attribLocations.normalLocation, size, type, isNormalize, stride, offset);
+        this.gl.vertexAttribPointer(this.programInfo.attribLocations.normalLocation, size, type, isNormalize, stride,
+            offset);
 
         this.gl.enableVertexAttribArray(this.programInfo.attribLocations.colorLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.surface_color);
-        this.gl.vertexAttribPointer(this.programInfo.attribLocations.colorLocation, size, type, isNormalize, stride, offset);
+        this.gl.vertexAttribPointer(this.programInfo.attribLocations.colorLocation, size, type, isNormalize, stride,
+            offset);
 
         // Compute the projection matrix
         let aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
@@ -392,7 +396,8 @@ export class RenderMesh {
         //gl.uniform4fv(programInfo.uniformLocations.colorLocation, [0.2, 1, 0.2, 1]); // green
 
         // set the light direction.
-        this.gl.uniform3fv(this.programInfo.uniformLocations.reverseLightDirectionLocation, normalize([0.5, 0.7, 1], null));
+        this.gl.uniform3fv(this.programInfo.uniformLocations.reverseLightDirectionLocation,
+            normalize([0.5, 0.7, 1], null));
 
         // set the is mesh sign
         this.gl.uniform1i(this.programInfo.uniformLocations.isMeshLocation, 0);
@@ -409,7 +414,8 @@ export class RenderMesh {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.mesh_position);
 
         // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-        this.gl.vertexAttribPointer(this.programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
+        this.gl.vertexAttribPointer(this.programInfo.attribLocations.positionLocation, size, type, isNormalize, stride,
+            offset);
         // Draw the mesh
         if (this.isMesh) {
             this.gl.drawArrays(this.gl.LINES, offset, this.numSeg);
@@ -424,7 +430,8 @@ export class RenderMesh {
             this.gl.uniform4f(this.programInfo.uniformLocations.worldScale, 1.0, 1.0, 1.0, 1.0);
 
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.axes_position);
-            this.gl.vertexAttribPointer(this.programInfo.attribLocations.positionLocation, size, type, isNormalize, stride, offset);
+            this.gl.vertexAttribPointer(this.programInfo.attribLocations.positionLocation, size, type, isNormalize,
+                stride, offset);
             // Turn on the normal attribute
             this.gl.enableVertexAttribArray(this.programInfo.attribLocations.normalLocation);
             this.gl.disable(this.gl.DEPTH_TEST);
@@ -446,8 +453,8 @@ export class RenderMesh {
 
             for (let i = 0; i < 7; i++) {
                 let index = i !== 6 ? Math.round(start - i * step) : stop;
-                this.legend.color[i] = "rgb(" + 255 * this.colorTable[index][0] + ", " +
-                    255 * this.colorTable[index][1] + ", " + 255 * this.colorTable[index][2] + ")";
+                this.legend.color[i] = "rgb(" + 255 * this.colorTable[index][0] + ", " + 255 * this.colorTable[index][1]
+                    + ", " + 255 * this.colorTable[index][2] + ")";
                 this.legend.value[i] = ((x, f) => {
                     let value = x.toExponential(f);
                     return value >= 0 ? "+" + value : value;
@@ -463,8 +470,8 @@ export class RenderMesh {
             this.ctx.fillStyle = this.legend.color[i];
             this.ctx.fillText("█", left,  top + i * 20);
             this.ctx.fillStyle = "black";
-            this.ctx.fillText(String(this.legend.value[i]), left + this.ctx.measureText("12").width,  top + i * 20);
-
+            this.ctx.fillText(String(this.legend.value[i]), left + this.ctx.measureText("12").width,
+                top + i * 20);
         }
     }
     createBuffers(radius) {
@@ -498,8 +505,8 @@ export class RenderMesh {
         let axesBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, axesBuffer);
         // Put geometry data into buffer
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0, 0.05 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            0.05 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05 * radius]), this.gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0, 0.05 * radius, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.05 * radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05 * radius]), this.gl.STATIC_DRAW);
 
         return {
             surface_position: positionBuffer,
@@ -564,7 +571,8 @@ export class RenderMesh {
                 ((x[3] - x[0]) * (x[7] - x[1]) - (x[6] - x[0]) * (x[4] - x[1]))
             ];
         })([tri[0][0], tri[0][1], tri[0][2], tri[1][0], tri[1][1], tri[1][2], tri[2][0], tri[2][1], tri[2][2]]);
-        let colorIndex = [this.getColorIndex(tri[0][3]), this.getColorIndex(tri[1][3]), this.getColorIndex(tri[2][3])];
+        let colorIndex = [this.getColorIndex(tri[0][3]), this.getColorIndex(tri[1][3]),
+            this.getColorIndex(tri[2][3])];
         let index = (() => {
             if (tri[0][3] === tri[1][3] && tri[1][3] === tri[2][3]) {
                 return [0, 1, 2];
@@ -638,8 +646,8 @@ export class RenderMesh {
                             this.colorTable[clr][1], this.colorTable[clr][2]);
                         positions.push(p02[i + 1][0], p02[i + 1][1], p02[i + 1][2], p012[i][0], p012[i][1], p012[i][2],
                             p012[i + 1][0], p012[i + 1][1], p012[i + 1][2]);
-                        normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0], normal[1],
-                            normal[2]);
+                        normals.push(normal[0], normal[1], normal[2], normal[0], normal[1], normal[2], normal[0],
+                            normal[1], normal[2]);
                     }
                 }
             }
