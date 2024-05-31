@@ -465,7 +465,7 @@ export class RenderMesh {
     showLegend() {
         let top = 20;
         let left = 10;
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < (this.minU[0] === this.maxU[0] ? 1 : 7); i++) {
             this.ctx.font = "14px monospace";
             this.ctx.fillStyle = this.legend.color[i];
             this.ctx.fillText("█", left,  top + i * 20);
