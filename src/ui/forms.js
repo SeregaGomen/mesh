@@ -1,5 +1,5 @@
 import React from "react";
-import {renderImage, renderParams} from '../draw/draw';
+import {renderMesh} from '../draw/draw';
 import {degToRad, radToDeg} from '../utils/utils';
 import {Canvas, CheckBox, Slider, LoadButton, RadioBox, ListBox} from './primitives';
 
@@ -199,7 +199,7 @@ export class Forms extends React.Component {
     }
     clear = () => {
         this.setState({mesh: null});
-        renderParams.mesh = null;
+        renderMesh.setIsMesh(null);
     }
     updateFile = (value) => {
         this.setState({mesh: value.mesh});
@@ -215,93 +215,73 @@ export class Forms extends React.Component {
         this.setState({isSurface: true});
         this.setState({transformation: {index: [0, 1, 2], ratio: 0.0}});
         if (value.mesh) {
-            renderParams.mesh = value.mesh;
-            renderParams.funIndex = 0;
-            renderParams.numColors = 32;
-            renderParams.isLegend = true;
-            renderParams.isAutoRotation = true;
-            renderParams.isAxes = true;
-            renderParams.rotation = [0.0, 0.0, 0.0];
-            renderParams.translate = [0.0, 0.0, 0.0];
-            renderParams.scale = 1.0;
-            renderParams.isMesh = true;
-            renderParams.isSurface = true;
-            renderParams.transformation = {index: [0, 1, 2], ratio: 0.0};
-            renderImage();
+            renderMesh.setMesh(value.mesh);
         }
     }
     updateFunIndex = (value) => {
         this.setState({funIndex: value.funIndex});
-        renderParams.funIndex = value.funIndex;
-        renderImage();
+        renderMesh.setFunIndex(value.funIndex);
     }
     updateNumColors = (value) => {
         this.setState({numColors: value.numColors});
-        renderParams.numColors = value.numColors;
-        renderImage();
+        renderMesh.setNumColors(value.numColors);
     }
     updateIsLegend = (value) => {
         this.setState({isLegend: value.isLegend});
-        renderParams.isLegend = value.isLegend;
-        //renderImage();
+        renderMesh.setIsLegend(value.isLegend);
     }
     updateRotation = (value) => {
         this.setState({rotation: value});
-        renderParams.rotation = [degToRad(value[0]), degToRad(value[1]), degToRad(value[2])];
+        renderMesh.setRotation([degToRad(value[0]), degToRad(value[1]), degToRad(value[2])]);
     }
     updateIsAutoRotation = (value) => {
         this.setState({isAutoRotation: value});
         if (value === false) {
             this.setState({rotation: [
-                Math.round(radToDeg(renderParams.rotation[0])) % 360,
-                Math.round(radToDeg(renderParams.rotation[1])) % 360,
-                Math.round(radToDeg(renderParams.rotation[2])) % 360,
+                Math.round(radToDeg(renderMesh.getRotation()[0])) % 360,
+                Math.round(radToDeg(renderMesh.getRotation()[1])) % 360,
+                Math.round(radToDeg(renderMesh.getRotation()[2])) % 360,
             ]});
         }
-        renderParams.isAutoRotation = value;
+        renderMesh.setIsAutoRotation(value);
     }
     updateIsAxes = (value) => {
         this.setState({isAxes: value});
-        renderParams.isAxes = value;
+        renderMesh.setIsAxes(value);
     }
     updateRadio = (value) => {
         if (value === 0) {
             this.setState({isMesh: true});
             this.setState({isSurface: true});
-            renderParams.isMesh = true;
-            renderParams.isSurface = true;
+            renderMesh.setIsMesh(true);
+            renderMesh.setIsSurface(true);
         } else if (value === 1) {
             this.setState({isMesh: true});
             this.setState({isSurface: false});
-            renderParams.isMesh = true;
-            renderParams.isSurface = false;
+            renderMesh.setIsMesh(true);
+            renderMesh.setIsSurface(false);
         } else {
             this.setState({isMesh: false});
             this.setState({isSurface: true});
-            renderParams.isMesh = false;
-            renderParams.isSurface = true;
+            renderMesh.setIsMesh(false);
+            renderMesh.setIsSurface(true);
         }
     }
     updateScale = (value) => {
         this.setState({scale: value});
-        renderParams.scale = value;
+        renderMesh.setScale(value);
     }
     updateTranslate = (value) => {
         this.setState({translate: value});
-        renderParams.translate = value;
+        renderMesh.setTranslate(value);
     }
     updateTransformationIndex = (value) => {
         this.setState({transformation: {index: value, ratio: this.state.transformation.ratio}});
-        renderParams.transformation.index = value;
-        if (this.state.transformation.ratio) {
-            renderImage();
-        }
+        renderMesh.setTransformationIndex(value);
     }
     updateTransformationRatio = (value) => {
         this.setState({transformation: {index: this.state.transformation.index, ratio: value}});
-        renderParams.isTransformation = value !== 0;
-        renderParams.transformation.ratio = value;
-        renderImage();
+        renderMesh.setTransformationRatio(value);
     }
 
     render() {
