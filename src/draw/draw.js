@@ -126,54 +126,54 @@ export class RenderMesh {
         this.isTransformation = ratio !== 0;
         this.renderImage();
     }
-    getTransformationRatio(ratio) {
-        return this.transformation.ratio;
-    }
+    // getTransformationRatio(ratio) {
+    //     return this.transformation.ratio;
+    // }
     setTransformationIndex(index) {
         this.transformation.index = index;
         if (this.transformation.ratio) {
             this.renderImage();
         }
     }
-    getTransformationIndex() {
-        return this.transformation.index;
-    }
+    // getTransformationIndex() {
+    //     return this.transformation.index;
+    // }
     setTranslate(translate) {
         this.translate = translate;
     }
-    getTranslate() {
-        return this.translate;
-    }
+    // getTranslate() {
+    //     return this.translate;
+    // }
     setScale(scale) {
         this.scale = scale;
     }
-    getScale() {
-        return this.scale;
-    }
+    // getScale() {
+    //     return this.scale;
+    // }
     setIsSurface(isSurface) {
         this.isSurface = isSurface;
     }
-    getIsSurface() {
-        return this.isSurface;
-    }
+    // getIsSurface() {
+    //     return this.isSurface;
+    // }
     setIsMesh(isMesh) {
         this.isMesh = isMesh;
     }
-    getIsMesh() {
-        return this.isMesh;
-    }
+    // getIsMesh() {
+    //     return this.isMesh;
+    // }
     setIsAxes(isAxes) {
         this.isAxes = isAxes;
     }
-    getIsAxes(isAxes) {
-        return this.isAxes;
-    }
+    // getIsAxes(isAxes) {
+    //     return this.isAxes;
+    // }
     setIsAutoRotation(isAutoRotation) {
         this.isAutoRotation = isAutoRotation;
     }
-    getIsAutoRotation() {
-        return this.isAutoRotation;
-    }
+    // getIsAutoRotation() {
+    //     return this.isAutoRotation;
+    // }
     setRotation(rotation) {
         this.rotation = rotation;
     }
@@ -183,23 +183,23 @@ export class RenderMesh {
     setIsLegend(isLegend) {
         this.isLegend = isLegend;
     }
-    getIsLegend(isLegend) {
-        return this.isLegend;
-    }
+    // getIsLegend(isLegend) {
+    //     return this.isLegend;
+    // }
     setNumColors(numColors) {
         this.numColors = numColors;
         this.renderImage();
     }
-    getNumColors(numColors) {
-        return this.numColors;
-    }
+    // getNumColors(numColors) {
+    //     return this.numColors;
+    // }
     setFunIndex(funIndex) {
         this.funIndex = funIndex;
         this.renderImage();
     }
-    getFunIndex(funIndex) {
-        return this.funIndex;
-    }
+    // getFunIndex(funIndex) {
+    //     return this.funIndex;
+    // }
     setMesh(mesh) {
         this.mesh = mesh;
         this.funIndex = 0;
@@ -215,9 +215,9 @@ export class RenderMesh {
         this.transformation = {index: [0, 1, 2], ratio: 0.0};
         this.renderImage();
     }
-    getMesh(mesh) {
-        return this.mesh;
-    }
+    // getMesh(mesh) {
+    //     return this.mesh;
+    // }
     renderImage() {
         // Get a WebGL context
         let canvas = document.querySelector("canvas");
