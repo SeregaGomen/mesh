@@ -18,7 +18,7 @@ import {
 } from '../utils/utils';
 
 
-export class RenderMesh {
+class RenderMesh {
     constructor() {
         // Vertex shader
         this.vertexShaderSource = `

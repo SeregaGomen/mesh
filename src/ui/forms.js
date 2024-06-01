@@ -166,8 +166,10 @@ class TransformationObjectBox extends React.Component {
                     <ListBox name={"Function"} label={"Y: "} mesh={this.props.mesh} index={1}
                              value={this.props.transformation.index[1]} updateData={this.updateTransformationY}/>
                     {
-                        <ListBox name={"Function"} label={"Z: "} mesh={this.props.mesh} index={2}
+                        this.props.mesh.feType.indexOf("fe2d") === -1 ?
+                            <ListBox name={"Function"} label={"Z: "} mesh={this.props.mesh} index={2}
                                  value={this.props.transformation.index[2]} updateData={this.updateTransformationZ}/>
+                        : null
                     }
                     <Slider min={0} max={0.5} step={0.1} value={this.props.transformation.ratio} enabled={true}
                             caption={"Ratio:"} updateData={this.updateTransformationRatio}/>
