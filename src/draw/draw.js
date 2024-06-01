@@ -259,7 +259,7 @@ class RenderMesh {
 
         if (this.isTransformation) {
             this.maxTransformRatio = 0.0;
-            for (let k = 0; k < 3; k++) {
+            for (let k = 0; k < (this.mesh.feType.indexOf("fe2d") === -1 ? 3 : 2); k++) {
                 if (Math.abs(this.mesh.func[this.transformation.index[k]].maxU) > this.maxTransformRatio) {
                     this.maxTransformRatio = Math.abs(this.mesh.func[this.transformation.index[k]].maxU);
                 }

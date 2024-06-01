@@ -87,7 +87,7 @@ export class ListBox extends React.Component {
                     onChange={this.props.updateData}>
                     {
                         this.props.mesh ? this.props.mesh.func.map((v, i) => (
-                            <option value={i} selected={i===this.props.index}>{v.name}</option>
+                            <option key={i} value={i} selected={i===this.props.index}>{v.name}</option>
                         )) : null
                     }
                 </select>
