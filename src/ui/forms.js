@@ -16,6 +16,7 @@ class RotateBox extends React.Component {
                     {
                         !this.props.isAutoRotation ?
                             <Slider min={0} max={360} step={1} value={this.props.rotation[0]} caption={"X:"}
+                                    width={"20px"}
                                     updateData={(val) => {
                                         this.props.updateRotation([val, this.props.rotation[1], this.props.rotation[2]])
                                     }}
@@ -25,6 +26,7 @@ class RotateBox extends React.Component {
                     {
                         !this.props.isAutoRotation ?
                             <Slider min={0} max={360} step={1} value={this.props.rotation[1]} caption={"Y:"}
+                                    width={"20px"}
                                     updateData={(val) => {
                                         this.props.updateRotation([this.props.rotation[0], val, this.props.rotation[2]])
                                     }}
@@ -34,6 +36,7 @@ class RotateBox extends React.Component {
                     {
                         !this.props.isAutoRotation ?
                             <Slider min={0} max={360} step={1} value={this.props.rotation[2]} caption={"Z:"}
+                                    width={"20px"}
                                     updateData={(val) => {
                                         this.props.updateRotation([this.props.rotation[0], this.props.rotation[1], val])
                                     }}
@@ -61,7 +64,7 @@ class ResultBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="resultBox">
                     <legend>Result</legend>
-                    <ListBox name={"Function"} label={"Function: "} mesh={this.props.mesh} index={0}
+                    <ListBox name={"Function"} label={"Function:"} mesh={this.props.mesh} index={0} width={"70px"}
                              value={this.props.funIndex} updateData={this.updateFunction}/>
                     <Slider min={32} max={256} step={32} value={this.props.numColors} enabled={true} caption={"Colors:"}
                             updateData={this.updateNumColors}/>
@@ -115,10 +118,10 @@ class TranslationSceneBox extends React.Component {
                 <fieldset className="TranslationSceneBox">
                     <legend>Translation scene</legend>
                     <Slider min={-1.00} max={1.00} step={0.25} value={this.props.translate[0]} enabled={true}
-                            caption={"X:"}
+                            caption={"X:"} width={"20px"}
                             updateData={this.updateTranslateX}/>
                     <Slider min={-1.00} max={1.00} step={0.25} value={this.props.translate[1]} enabled={true}
-                            caption={"Y:"}
+                            caption={"Y:"} width={"20px"}
                             updateData={this.updateTranslateY}/>
                 </fieldset>
             : null
@@ -161,13 +164,13 @@ class TransformationObjectBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="transformationObjectBox">
                     <legend>Transformation object</legend>
-                    <ListBox name={"Function"} label={"X: "} mesh={this.props.mesh} index={0}
+                    <ListBox name={"Function"} label={"X: "} mesh={this.props.mesh} index={0} width={"20px"}
                              value={this.props.transformation.index[0]} updateData={this.updateTransformationX}/>
-                    <ListBox name={"Function"} label={"Y: "} mesh={this.props.mesh} index={1}
+                    <ListBox name={"Function"} label={"Y: "} mesh={this.props.mesh} index={1} width={"20px"}
                              value={this.props.transformation.index[1]} updateData={this.updateTransformationY}/>
                     {
                         this.props.mesh.feType.indexOf("fe2d") === -1 ?
-                            <ListBox name={"Function"} label={"Z: "} mesh={this.props.mesh} index={2}
+                            <ListBox name={"Function"} label={"Z: "} mesh={this.props.mesh} index={2} width={"20px"}
                                  value={this.props.transformation.index[2]} updateData={this.updateTransformationZ}/>
                         : null
                     }

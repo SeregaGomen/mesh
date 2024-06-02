@@ -79,7 +79,7 @@ export class CheckBox extends React.Component {
 export class ListBox extends React.Component {
     render() {
         return (
-            <label>{this.props.label}
+            <label><span style={{width: this.props.width, float: "left"}}>{this.props.label}</span>
                 <select
                     name={this.props.name}
                     size={1}
@@ -105,7 +105,7 @@ export class Slider extends React.Component {
     render() {
         return (
             <div>
-                <label>{this.props.caption}
+                <label><span style={{width: this.props.width, float: "left"}}>{this.props.caption}</span>
                     <input type="range"
                            min={this.props.min}
                            max={this.props.max}
