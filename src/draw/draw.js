@@ -213,7 +213,16 @@ class RenderMesh {
         this.isMesh = true;
         this.isSurface = true;
         this.transformation = {index: [0, 1, 2], ratio: 0.0};
-        this.renderImage();
+        if (this.mesh) {
+            this.renderImage();
+        } else {
+            cancelAnimationFrame(this.id);
+            if (this.gl) {
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+                this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            }
+        }
+
     }
     // getMesh(mesh) {
     //     return this.mesh;

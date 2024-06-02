@@ -201,7 +201,7 @@ export class Forms extends React.Component {
     }
     clear = () => {
         this.setState({mesh: null});
-        renderMesh.setIsMesh(null);
+        renderMesh.setMesh(null);
     }
     updateFile = (value) => {
         this.setState({mesh: value.mesh});
