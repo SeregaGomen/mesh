@@ -164,13 +164,13 @@ class TransformationObjectBox extends React.Component {
             this.props.mesh && this.props.mesh.func.length ?
                 <fieldset className="transformationObjectBox">
                     <legend>Transformation object</legend>
-                    <ListBox name={"Function"} label={"X: "} mesh={this.props.mesh} index={0} width={"20px"}
+                    <ListBox name={"Function"} label={"X:"} mesh={this.props.mesh} index={0} width={"20px"}
                              value={this.props.transformation.index[0]} updateData={this.updateTransformationX}/>
-                    <ListBox name={"Function"} label={"Y: "} mesh={this.props.mesh} index={1} width={"20px"}
+                    <ListBox name={"Function"} label={"Y:"} mesh={this.props.mesh} index={1} width={"20px"}
                              value={this.props.transformation.index[1]} updateData={this.updateTransformationY}/>
                     {
                         this.props.mesh.feType.indexOf("fe2d") === -1 ?
-                            <ListBox name={"Function"} label={"Z: "} mesh={this.props.mesh} index={2} width={"20px"}
+                            <ListBox name={"Function"} label={"Z:"} mesh={this.props.mesh} index={2} width={"20px"}
                                  value={this.props.transformation.index[2]} updateData={this.updateTransformationZ}/>
                         : null
                     }
